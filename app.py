@@ -17,16 +17,16 @@ def create_connection():
         return None
 
 # Insert data into the database
-def insert_data(requester_name, purpose, amount_requested, submission_date):
+def insert_data(requester_name, purpose, amount_requested):
     conn = create_connection()
     if conn:
         try:
             with conn.cursor() as cur:
                 query = """
-                INSERT INTO "E-operation-table" ("Requester name", "purpose", "amount requested", "submission date")
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO "E-operation-table" ("Requester name", "Purpose", "amount requested", "submission date")
+                VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
                 """
-                cur.execute(query, (requester_name, purpose, amount_requested, submission_date))
+                cur.execute(query, (requester_name, purpose, amount_requested))
                 conn.commit()
                 st.success("Request submitted successfully!")
         except Exception as e:
@@ -63,11 +63,10 @@ def main():
         requester_name = st.text_input("Requester Name")
         purpose = st.text_area("Purpose of Request")
         amount_requested = st.number_input("Amount Requested", min_value=0.0, step=0.01)
-        submission_date = st.date_input("Submission Date")
 
         if st.button("Submit"):
             if requester_name and purpose and amount_requested > 0:
-                insert_data(requester_name, purpose, amount_requested, submission_date)
+                insert_data(requester_name, purpose, amount_requested)
             else:
                 st.warning("Please fill out all fields correctly.")
 
