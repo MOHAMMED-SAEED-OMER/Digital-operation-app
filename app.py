@@ -1,57 +1,86 @@
 import streamlit as st
 import psycopg2
-from datetime import datetime
 
-# Database connection
-def connect_to_db():
-    return psycopg2.connect(
-        host="localhost",
-        database="E-operation-database",
-        user="postgres",
-        password="Hama1234"
-    )
+# Database connection function
+def create_connection():
+    try:
+        conn = psycopg2.connect(
+            host="localhost",  # Replace with your server's IP if not local
+            port=5432,         # Default PostgreSQL port
+            database="E-operation-database",  # Your database name
+            user="postgres",   # Your username
+            password="Hama1234"  # Your password
+        )
+        return conn
+    except Exception as e:
+        st.error(f"Error connecting to the database: {e}")
+        return None
 
 # Insert data into the database
-def insert_request(requester_name, purpose, amount_requested):
-    conn = connect_to_db()
-    cursor = conn.cursor()
-    query = """
-    INSERT INTO "E-operation-table" ("Requester name", "purpose", "amount requested", "submission date")
-    VALUES (%s, %s, %s, %s)
-    """
-    cursor.execute(query, (requester_name, purpose, amount_requested, datetime.now()))
-    conn.commit()
-    cursor.close()
-    conn.close()
+def insert_data(requester_name, purpose, amount_requested, submission_date):
+    conn = create_connection()
+    if conn:
+        try:
+            with conn.cursor() as cur:
+                query = """
+                INSERT INTO "E-operation-table" ("Requester name", "purpose", "amount requested", "submission date")
+                VALUES (%s, %s, %s, %s)
+                """
+                cur.execute(query, (requester_name, purpose, amount_requested, submission_date))
+                conn.commit()
+                st.success("Request submitted successfully!")
+        except Exception as e:
+            st.error(f"Error inserting data: {e}")
+        finally:
+            conn.close()
 
-# Streamlit app
-st.title("Request Form")
+# Retrieve data from the database
+def get_data():
+    conn = create_connection()
+    if conn:
+        try:
+            with conn.cursor() as cur:
+                query = 'SELECT * FROM "E-operation-table"'
+                cur.execute(query)
+                rows = cur.fetchall()
+                return rows
+        except Exception as e:
+            st.error(f"Error retrieving data: {e}")
+            return []
+        finally:
+            conn.close()
+    return []
 
-with st.form("request_form"):
-    st.subheader("Submit a New Request")
-    requester_name = st.text_input("Requester Name")
-    purpose = st.text_area("Purpose")
-    amount_requested = st.number_input("Amount Requested", min_value=0.0, step=0.01)
+# Streamlit app layout
+def main():
+    st.title("E-Operation Request System")
 
-    # Submit button
-    submitted = st.form_submit_button("Submit Request")
-    if submitted:
-        if requester_name and purpose and amount_requested > 0:
-            insert_request(requester_name, purpose, amount_requested)
-            st.success("Request submitted successfully!")
+    menu = ["Submit Request", "View Requests"]
+    choice = st.sidebar.selectbox("Menu", menu)
+
+    if choice == "Submit Request":
+        st.subheader("Submit a New Request")
+        requester_name = st.text_input("Requester Name")
+        purpose = st.text_area("Purpose of Request")
+        amount_requested = st.number_input("Amount Requested", min_value=0.0, step=0.01)
+        submission_date = st.date_input("Submission Date")
+
+        if st.button("Submit"):
+            if requester_name and purpose and amount_requested > 0:
+                insert_data(requester_name, purpose, amount_requested, submission_date)
+            else:
+                st.warning("Please fill out all fields correctly.")
+
+    elif choice == "View Requests":
+        st.subheader("All Submitted Requests")
+        data = get_data()
+        if data:
+            st.write("### Submitted Requests")
+            for row in data:
+                st.write(f"ID: {row[0]}, Requester: {row[1]}, Purpose: {row[2]}, "
+                         f"Amount: {row[3]}, Date: {row[4]}")
         else:
-            st.error("Please fill out all fields.")
+            st.info("No data found.")
 
-# Display submitted data
-st.subheader("Submitted Requests")
-try:
-    conn = connect_to_db()
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM "E-operation-table"')
-    rows = cursor.fetchall()
-    for row in rows:
-        st.write(f"ID: {row[0]}, Name: {row[1]}, Purpose: {row[2]}, Amount: {row[3]}, Date: {row[4]}")
-    cursor.close()
-    conn.close()
-except Exception as e:
-    st.error(f"Error retrieving data: {e}")
+if __name__ == "__main__":
+    main()
