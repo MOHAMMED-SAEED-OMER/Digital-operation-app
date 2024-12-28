@@ -1,69 +1,83 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 import os
 
-# Constants
+# File path for the database CSV
 DATABASE_FILE = "database.csv"
 
-def load_data():
+# Function to initialize the database if it doesn't exist
+def initialize_database():
     if not os.path.exists(DATABASE_FILE):
-        # Create the CSV file with headers if it doesn't exist
-        with open(DATABASE_FILE, "w") as file:
-            file.write("Requester Name,Purpose,Amount Requested,Submission Date\n")
-    return pd.read_csv(DATABASE_FILE)
+        columns = ["Reference ID", "Request Submission Date", "Requester Name", "Request Purpose", "Amount Requested"]
+        pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
 
-def save_data(data):
-    data.to_csv(DATABASE_FILE, index=False)
-
-def welcome_page():
-    st.title("Welcome to the E-operation App")
-    st.write("This application allows you to manage requests and track their details.")
-
-def request_form_page():
-    st.title("Submit a New Request")
-
-    with st.form("request_form"):
-        requester_name = st.text_input("Requester Name")
-        purpose = st.text_area("Purpose of Request")
-        amount_requested = st.number_input("Amount Requested", min_value=0.0, format="%.2f")
-        submission_date = st.date_input("Submission Date")
-
-        submitted = st.form_submit_button("Submit")
-
-        if submitted:
-            if requester_name and purpose and amount_requested > 0:
-                new_request = pd.DataFrame({
-                    "Requester Name": [requester_name],
-                    "Purpose": [purpose],
-                    "Amount Requested": [amount_requested],
-                    "Submission Date": [submission_date]
-                })
-                data = load_data()
-                data = pd.concat([data, new_request], ignore_index=True)
-                save_data(data)
-                st.success("Request submitted successfully!")
-            else:
-                st.error("Please fill in all fields correctly.")
-
-def database_page():
-    st.title("Database of Requests")
-    data = load_data()
-
+# Function to generate the next Reference ID
+def get_next_reference_id(data):
     if data.empty:
-        st.write("No requests have been submitted yet.")
+        return 1
     else:
-        st.dataframe(data)
-        st.download_button(
-            label="Download CSV",
-            data=data.to_csv(index=False),
-            file_name="database.csv",
-            mime="text/csv"
-        )
+        return int(data["Reference ID"].max()) + 1
 
+# Function to display the welcome page
+def welcome_page():
+    st.title("Welcome to the E-Operation App")
+    st.markdown("""
+        - **Submit Requests:** Use the form to submit a new request.
+        - **View Database:** View all submitted requests.
+    """)
+
+# Function to display the request form
+def request_form_page():
+    st.title("Request Form")
+    st.subheader("Submit a New Request")
+    
+    # Form fields
+    requester_name = st.text_input("Requester Name")
+    request_purpose = st.text_area("Request Purpose")
+    amount_requested = st.number_input("Amount Requested", min_value=0.0, format="%.2f")
+
+    if st.button("Submit Request"):
+        # Read existing data
+        data = pd.read_csv(DATABASE_FILE)
+        
+        # Generate new request details
+        reference_id = get_next_reference_id(data)
+        submission_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Append new request
+        new_request = {
+            "Reference ID": reference_id,
+            "Request Submission Date": submission_date,
+            "Requester Name": requester_name,
+            "Request Purpose": request_purpose,
+            "Amount Requested": amount_requested,
+        }
+        data = data.append(new_request, ignore_index=True)
+        data.to_csv(DATABASE_FILE, index=False)
+        
+        st.success(f"Request submitted successfully with Reference ID: {reference_id}")
+
+# Function to display the database
+def database_page():
+    st.title("Database")
+    st.subheader("View All Requests")
+    
+    # Read and display the database
+    if os.path.exists(DATABASE_FILE):
+        data = pd.read_csv(DATABASE_FILE)
+        st.dataframe(data)
+    else:
+        st.warning("No requests found. Submit a request to populate the database.")
+
+# Main function to control the app
 def main():
+    initialize_database()
+    
+    # Sidebar navigation
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ["Welcome", "Request Form", "Database"])
-
+    
     if page == "Welcome":
         welcome_page()
     elif page == "Request Form":
