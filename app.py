@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from google.oauth2.service_account import Credentials
 from gspread import authorize
-import gspread
 
 # Constants
 SHEET_URL = 'https://docs.google.com/spreadsheets/d/1PJ0F1NP9RVR3a3nB6O1sZO_4WlBrexRPRw33C7AjW8E/edit?gid=0#gid=0'
@@ -18,10 +17,15 @@ def create_gsheets_connection():
 # Insert data into Google Sheets
 def insert_data(requester_name, purpose, amount_requested):
     sheet = create_gsheets_connection()
+    
+    # Get the current number of rows to generate a unique Reference ID
+    current_rows = len(sheet.get_all_records())
+    reference_id = current_rows + 1  # Simple sequential ID
+
     submission_date = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
     
     # Prepare the data to insert
-    data = [requester_name, purpose, amount_requested, submission_date]
+    data = [reference_id, submission_date, requester_name, purpose, amount_requested]
     sheet.append_row(data)
     st.success("Request submitted successfully!")
 
@@ -56,8 +60,9 @@ def main():
         if data:
             st.write("### Submitted Requests")
             for row in data:
-                st.write(f"Requester: {row['Requester name']}, Purpose: {row['Purpose']}, "
-                         f"Amount: {row['amount requested']}, Date: {row['submission date']}")
+                st.write(f"Reference ID: {row['Reference ID']}, Submission Date: {row['Request submission date']}, "
+                         f"Requester: {row['Requester name']}, Purpose: {row['Request purpose']}, "
+                         f"Amount: {row['Amount requested']}")
         else:
             st.info("No data found.")
 
