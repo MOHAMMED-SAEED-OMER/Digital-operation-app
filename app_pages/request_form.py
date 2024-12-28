@@ -2,6 +2,7 @@ import streamlit as st
 from datetime import datetime
 from utils.database import read_data, write_data, get_next_reference_id
 
+
 def request_form_page():
     st.title("Request Form")
     st.subheader("Submit a New Request")
