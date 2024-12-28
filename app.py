@@ -12,7 +12,7 @@ def main():
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ["Welcome", "Request Form", "Database"])
 
-    # Call the respective page functions
+    # Navigate to the selected page
     if page == "Welcome":
         welcome_page()
     elif page == "Request Form":
