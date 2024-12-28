@@ -2,6 +2,7 @@ import streamlit as st
 from app_pages.welcome_page import welcome_page
 from app_pages.request_form import request_form_page
 from app_pages.database_page import database_page
+from app_pages.managers_view import managers_view_page
 from utils.database import initialize_database
 
 def main():
@@ -10,7 +11,10 @@ def main():
 
     # Sidebar navigation
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Welcome", "Request Form", "Database"])
+    page = st.sidebar.radio(
+        "Go to", 
+        ["Welcome", "Request Form", "Database", "Manager's View"]
+    )
 
     # Navigate to the selected page
     if page == "Welcome":
@@ -19,6 +23,8 @@ def main():
         request_form_page()
     elif page == "Database":
         database_page()
+    elif page == "Manager's View":
+        managers_view_page()
 
 if __name__ == "__main__":
     main()
