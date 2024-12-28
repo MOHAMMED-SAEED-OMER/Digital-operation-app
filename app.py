@@ -1,53 +1,62 @@
 import streamlit as st
 import pandas as pd
+import os
 
-# Initialize a placeholder for the database
-data = []
+# Path to the database file
+DATABASE_FILE = "database.csv"
 
-# Define the pages
-def welcome_page():
-    st.title("Welcome to the Request Management System")
-    st.write("This application allows you to submit and view requests.")
+# Initialize the database
+if not os.path.exists(DATABASE_FILE):
+    df = pd.DataFrame(columns=["Requester Name", "Purpose", "Amount Requested", "Submission Date"])
+    df.to_csv(DATABASE_FILE, index=False)
 
-def request_form():
-    st.title("Request Form")
-    
-    # Form fields
-    with st.form("request_form"):
+# Load the database
+def load_database():
+    return pd.read_csv(DATABASE_FILE)
+
+# Save the request to the database
+def save_request(requester_name, purpose, amount_requested, submission_date):
+    df = load_database()
+    new_row = {
+        "Requester Name": requester_name,
+        "Purpose": purpose,
+        "Amount Requested": amount_requested,
+        "Submission Date": submission_date,
+    }
+    df = df.append(new_row, ignore_index=True)
+    df.to_csv(DATABASE_FILE, index=False)
+
+# Streamlit app layout
+def main():
+    st.title("E-Operation Request System")
+
+    # Sidebar menu
+    menu = ["Welcome", "Request Form", "Database"]
+    choice = st.sidebar.selectbox("Menu", menu)
+
+    if choice == "Welcome":
+        st.header("Welcome to the E-Operation Request System!")
+        st.write("Navigate through the pages using the sidebar.")
+        st.image("https://via.placeholder.com/600x300", caption="E-Operation System")
+
+    elif choice == "Request Form":
+        st.header("Submit a New Request")
         requester_name = st.text_input("Requester Name")
-        purpose = st.text_input("Purpose of Request")
-        amount_requested = st.number_input("Amount Requested", min_value=0.0, format="%.2f")
+        purpose = st.text_area("Purpose of Request")
+        amount_requested = st.number_input("Amount Requested", min_value=0.0, step=0.01)
         submission_date = st.date_input("Submission Date")
-        
-        # Submit button
-        submitted = st.form_submit_button("Submit")
-        
-        if submitted:
-            global data
-            data.append({
-                "Requester Name": requester_name,
-                "Purpose": purpose,
-                "Amount Requested": amount_requested,
-                "Submission Date": str(submission_date)
-            })
-            st.success("Request submitted successfully!")
 
-def database_page():
-    st.title("Request Database")
-    global data
-    if data:
-        df = pd.DataFrame(data)
+        if st.button("Submit"):
+            if requester_name and purpose and amount_requested > 0:
+                save_request(requester_name, purpose, amount_requested, submission_date)
+                st.success("Request submitted successfully!")
+            else:
+                st.warning("Please fill out all fields correctly.")
+
+    elif choice == "Database":
+        st.header("View All Submitted Requests")
+        df = load_database()
         st.dataframe(df)
-    else:
-        st.write("No requests have been submitted yet.")
 
-# Streamlit app structure
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Welcome", "Request Form", "Database"])
-
-if page == "Welcome":
-    welcome_page()
-elif page == "Request Form":
-    request_form()
-elif page == "Database":
-    database_page()
+if __name__ == "__main__":
+    main()
