@@ -1,39 +1,35 @@
 import streamlit as st
-import pandas as pd
+import gspread
 from google.oauth2.service_account import Credentials
-from gspread import authorize
 
-# Constants
+# Constants for Google Sheets connection
 SHEET_URL = 'https://docs.google.com/spreadsheets/d/1PJ0F1NP9RVR3a3nB6O1sZO_4WlBrexRPRw33C7AjW8E/edit?gid=0#gid=0'
 TAB_NAME = 'Database'
-JSON_FILE_PATH = 'clever-bee-442514-j7-8a5ce402aab0.json'
+JSON_FILE_PATH = 'clever-bee-442514-j7-23cb031a9b05.json'  # Update to your new JSON file path
 
-# Function to create a Google Sheets connection
+# Create a connection to Google Sheets
 def create_gsheets_connection():
-    credentials = Credentials.from_service_account_file(JSON_FILE_PATH)
-    client = authorize(credentials)
-    return client.open_by_url(SHEET_URL).worksheet(TAB_NAME)
+    try:
+        credentials = Credentials.from_service_account_file(JSON_FILE_PATH)
+        client = gspread.authorize(credentials)
+        return client.open_by_url(SHEET_URL).worksheet(TAB_NAME)
+    except Exception as e:
+        st.error(f"Error connecting to Google Sheets: {e}")
+        return None
 
 # Insert data into Google Sheets
 def insert_data(requester_name, purpose, amount_requested):
     sheet = create_gsheets_connection()
-    
-    # Get the current number of rows to generate a unique Reference ID
-    current_rows = len(sheet.get_all_records())
-    reference_id = current_rows + 1  # Simple sequential ID
-
-    submission_date = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # Prepare the data to insert
-    data = [reference_id, submission_date, requester_name, purpose, amount_requested]
-    sheet.append_row(data)
-    st.success("Request submitted successfully!")
-
-# Retrieve data from Google Sheets
-def get_data():
-    sheet = create_gsheets_connection()
-    data = sheet.get_all_records()
-    return data
+    if sheet:
+        try:
+            # Get the current number of entries in the sheet to calculate Reference ID
+            current_rows = len(sheet.get_all_values())
+            reference_id = current_rows  # or however you want to generate the Reference ID
+            # Insert data into the next row
+            sheet.append_row([reference_id, "", requester_name, purpose, amount_requested])  # Update as needed for submission date
+            st.success("Request submitted successfully!")
+        except Exception as e:
+            st.error(f"Error inserting data: {e}")
 
 # Streamlit app layout
 def main():
@@ -56,15 +52,8 @@ def main():
 
     elif choice == "View Requests":
         st.subheader("All Submitted Requests")
-        data = get_data()
-        if data:
-            st.write("### Submitted Requests")
-            for row in data:
-                st.write(f"Reference ID: {row['Reference ID']}, Submission Date: {row['Request submission date']}, "
-                         f"Requester: {row['Requester name']}, Purpose: {row['Request purpose']}, "
-                         f"Amount: {row['Amount requested']}")
-        else:
-            st.info("No data found.")
+        # To implement: code to retrieve and display requests from Google Sheets
+        st.info("Viewing requests feature is not yet implemented.")
 
 if __name__ == "__main__":
     main()
