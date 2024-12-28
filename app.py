@@ -1,7 +1,7 @@
 import streamlit as st
-from pages.welcome_page import welcome_page
-from pages.request_form import request_form_page
-from pages.database_page import database_page
+from app_pages.welcome_page import welcome_page
+from app_pages.request_form import request_form_page
+from app_pages.database_page import database_page
 from utils.database import initialize_database
 
 def main():
