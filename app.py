@@ -32,14 +32,14 @@ def request_form_page():
 
         if submitted:
             if requester_name and purpose and amount_requested > 0:
-                new_request = {
-                    "Requester Name": requester_name,
-                    "Purpose": purpose,
-                    "Amount Requested": amount_requested,
-                    "Submission Date": submission_date
-                }
+                new_request = pd.DataFrame({
+                    "Requester Name": [requester_name],
+                    "Purpose": [purpose],
+                    "Amount Requested": [amount_requested],
+                    "Submission Date": [submission_date]
+                })
                 data = load_data()
-                data = data.append(new_request, ignore_index=True)
+                data = pd.concat([data, new_request], ignore_index=True)
                 save_data(data)
                 st.success("Request submitted successfully!")
             else:
