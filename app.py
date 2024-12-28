@@ -5,13 +5,14 @@ from pages.database_page import database_page
 from utils.database import initialize_database
 
 def main():
+    # Initialize the database
     initialize_database()
 
     # Sidebar navigation
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ["Welcome", "Request Form", "Database"])
 
-    # Load the selected page
+    # Call the respective page functions
     if page == "Welcome":
         welcome_page()
     elif page == "Request Form":
