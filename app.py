@@ -2,20 +2,19 @@ import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
 
-# Constants for Google Sheets connection
-SHEET_URL = 'https://docs.google.com/spreadsheets/d/1PJ0F1NP9RVR3a3nB6O1sZO_4WlBrexRPRw33C7AjW8E/edit?gid=0#gid=0'
-TAB_NAME = 'Database'
-JSON_FILE_PATH = 'clever-bee-442514-j7-23cb031a9b05.json'  # Update to your new JSON file path
+# Add this line to define scopes
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-# Create a connection to Google Sheets
 def create_gsheets_connection():
     try:
-        credentials = Credentials.from_service_account_file(JSON_FILE_PATH)
+        # Load the service account credentials and include the scopes
+        credentials = Credentials.from_service_account_file(JSON_FILE_PATH, scopes=SCOPES)
         client = gspread.authorize(credentials)
         return client.open_by_url(SHEET_URL).worksheet(TAB_NAME)
     except Exception as e:
         st.error(f"Error connecting to Google Sheets: {e}")
         return None
+
 
 # Insert data into Google Sheets
 def insert_data(requester_name, purpose, amount_requested):
