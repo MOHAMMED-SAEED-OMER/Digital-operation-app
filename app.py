@@ -12,7 +12,7 @@ def main():
     # Sidebar navigation
     st.sidebar.title("Navigation")
     page = st.sidebar.radio(
-        "Go to", 
+        "Go to",
         ["Welcome", "Request Form", "Database", "Manager's View"]
     )
 
