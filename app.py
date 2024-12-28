@@ -2,9 +2,11 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import os
+from filelock import FileLock
 
 # File path for the database CSV
 DATABASE_FILE = "database.csv"
+LOCK_FILE = DATABASE_FILE + ".lock"
 
 # Function to initialize the database if it doesn't exist
 def initialize_database():
@@ -15,9 +17,10 @@ def initialize_database():
 # Function to generate the next Reference ID
 def get_next_reference_id(data):
     if data.empty:
-        return 1
+        return "REQ-001"
     else:
-        return int(data["Reference ID"].max()) + 1
+        max_id = int(data["Reference ID"].str.split("-").str[1].max())
+        return f"REQ-{max_id + 1:03}"
 
 # Function to display the welcome page
 def welcome_page():
@@ -38,25 +41,31 @@ def request_form_page():
     amount_requested = st.number_input("Amount Requested", min_value=0.0, format="%.2f")
 
     if st.button("Submit Request"):
-        # Read existing data
-        data = pd.read_csv(DATABASE_FILE)
-        
-        # Generate new request details
-        reference_id = get_next_reference_id(data)
-        submission_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        # Append new request
-        new_request = {
-            "Reference ID": reference_id,
-            "Request Submission Date": submission_date,
-            "Requester Name": requester_name,
-            "Request Purpose": request_purpose,
-            "Amount Requested": amount_requested,
-        }
-        data = data.append(new_request, ignore_index=True)
-        data.to_csv(DATABASE_FILE, index=False)
-        
-        st.success(f"Request submitted successfully with Reference ID: {reference_id}")
+        if requester_name.strip() == "" or request_purpose.strip() == "" or amount_requested <= 0:
+            st.error("All fields are required. Please fill out the form completely.")
+        else:
+            # Read existing data
+            data = pd.read_csv(DATABASE_FILE)
+            
+            # Generate new request details
+            reference_id = get_next_reference_id(data)
+            submission_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Append new request
+            new_request = {
+                "Reference ID": reference_id,
+                "Request Submission Date": submission_date,
+                "Requester Name": requester_name,
+                "Request Purpose": request_purpose,
+                "Amount Requested": amount_requested,
+            }
+            data = data.append(new_request, ignore_index=True)
+            
+            # Use file lock for safe write
+            with FileLock(LOCK_FILE):
+                data.to_csv(DATABASE_FILE, index=False)
+            
+            st.success(f"Request submitted successfully with Reference ID: {reference_id}")
 
 # Function to display the database
 def database_page():
