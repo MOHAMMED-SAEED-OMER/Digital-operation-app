@@ -1,55 +1,35 @@
 import streamlit as st
-import psycopg2
+import pandas as pd
+from google.oauth2.service_account import Credentials
+from gspread import authorize
+import gspread
 
-# Database connection function
-def create_connection():
-    try:
-        conn = psycopg2.connect(
-            host="localhost",  # Replace with your server's IP if not local
-            port=5432,         # Default PostgreSQL port
-            database="E-operation-database",  # Your database name
-            user="postgres",   # Your username
-            password="Hama1234"  # Your password
-        )
-        return conn
-    except Exception as e:
-        st.error(f"Error connecting to the database: {e}")
-        return None
+# Constants
+SHEET_URL = 'https://docs.google.com/spreadsheets/d/1PJ0F1NP9RVR3a3nB6O1sZO_4WlBrexRPRw33C7AjW8E/edit?gid=0#gid=0'
+TAB_NAME = 'Database'
+JSON_FILE_PATH = 'clever-bee-442514-j7-8a5ce402aab0.json'
 
-# Insert data into the database
+# Function to create a Google Sheets connection
+def create_gsheets_connection():
+    credentials = Credentials.from_service_account_file(JSON_FILE_PATH)
+    client = authorize(credentials)
+    return client.open_by_url(SHEET_URL).worksheet(TAB_NAME)
+
+# Insert data into Google Sheets
 def insert_data(requester_name, purpose, amount_requested):
-    conn = create_connection()
-    if conn:
-        try:
-            with conn.cursor() as cur:
-                query = """
-                INSERT INTO "E-operation-table" ("Requester name", "Purpose", "amount requested", "submission date")
-                VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
-                """
-                cur.execute(query, (requester_name, purpose, amount_requested))
-                conn.commit()
-                st.success("Request submitted successfully!")
-        except Exception as e:
-            st.error(f"Error inserting data: {e}")
-        finally:
-            conn.close()
+    sheet = create_gsheets_connection()
+    submission_date = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Prepare the data to insert
+    data = [requester_name, purpose, amount_requested, submission_date]
+    sheet.append_row(data)
+    st.success("Request submitted successfully!")
 
-# Retrieve data from the database
+# Retrieve data from Google Sheets
 def get_data():
-    conn = create_connection()
-    if conn:
-        try:
-            with conn.cursor() as cur:
-                query = 'SELECT * FROM "E-operation-table"'
-                cur.execute(query)
-                rows = cur.fetchall()
-                return rows
-        except Exception as e:
-            st.error(f"Error retrieving data: {e}")
-            return []
-        finally:
-            conn.close()
-    return []
+    sheet = create_gsheets_connection()
+    data = sheet.get_all_records()
+    return data
 
 # Streamlit app layout
 def main():
@@ -76,8 +56,8 @@ def main():
         if data:
             st.write("### Submitted Requests")
             for row in data:
-                st.write(f"ID: {row[0]}, Requester: {row[1]}, Purpose: {row[2]}, "
-                         f"Amount: {row[3]}, Date: {row[4]}")
+                st.write(f"Requester: {row['Requester name']}, Purpose: {row['Purpose']}, "
+                         f"Amount: {row['amount requested']}, Date: {row['submission date']}")
         else:
             st.info("No data found.")
 
