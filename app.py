@@ -2,7 +2,12 @@ import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
 
-# Add this line to define scopes
+# Define your JSON file path, Google Sheet URL, and Tab name
+JSON_FILE_PATH = 'clever-bee-442514-j7-23cb031a9b05.json'  # Update with your actual JSON file name
+SHEET_URL = 'https://docs.google.com/spreadsheets/d/1PJ0F1NP9RVR3a3nB6O1sZO_4WlBrexRPRw33C7AjW8E/edit?gid=0#gid=0'
+TAB_NAME = 'Database'
+
+# Define the scope for Google Sheets API
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 def create_gsheets_connection():
@@ -15,7 +20,6 @@ def create_gsheets_connection():
         st.error(f"Error connecting to Google Sheets: {e}")
         return None
 
-
 # Insert data into Google Sheets
 def insert_data(requester_name, purpose, amount_requested):
     sheet = create_gsheets_connection()
@@ -23,7 +27,7 @@ def insert_data(requester_name, purpose, amount_requested):
         try:
             # Get the current number of entries in the sheet to calculate Reference ID
             current_rows = len(sheet.get_all_values())
-            reference_id = current_rows  # or however you want to generate the Reference ID
+            reference_id = current_rows  # Generate Reference ID based on current number of entries
             # Insert data into the next row
             sheet.append_row([reference_id, "", requester_name, purpose, amount_requested])  # Update as needed for submission date
             st.success("Request submitted successfully!")
