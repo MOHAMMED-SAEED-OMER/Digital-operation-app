@@ -1,47 +1,53 @@
 import streamlit as st
-import gspread
-from google.oauth2.service_account import Credentials
 import pandas as pd
-from datetime import datetime
-import uuid
 
-# Google Sheets API Setup
-SCOPE = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-SERVICE_ACCOUNT_FILE = 'keys/service_account.json'
+# Initialize a placeholder for the database
+data = []
 
-credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
-client = gspread.authorize(credentials)
+# Define the pages
+def welcome_page():
+    st.title("Welcome to the Request Management System")
+    st.write("This application allows you to submit and view requests.")
 
-# Connect to Google Sheet using URL and tab name
-SHEET_URL = 'https://docs.google.com/spreadsheets/d/1PJ0F1NP9RVR3a3nB6O1sZO_4WlBrexRPRw33C7AjW8E/edit#gid=0'
-sheet = client.open_by_url(SHEET_URL).worksheet('database')  # Replace 'database' with your tab name if different
+def request_form():
+    st.title("Request Form")
+    
+    # Form fields
+    with st.form("request_form"):
+        requester_name = st.text_input("Requester Name")
+        purpose = st.text_input("Purpose of Request")
+        amount_requested = st.number_input("Amount Requested", min_value=0.0, format="%.2f")
+        submission_date = st.date_input("Submission Date")
+        
+        # Submit button
+        submitted = st.form_submit_button("Submit")
+        
+        if submitted:
+            global data
+            data.append({
+                "Requester Name": requester_name,
+                "Purpose": purpose,
+                "Amount Requested": amount_requested,
+                "Submission Date": str(submission_date)
+            })
+            st.success("Request submitted successfully!")
 
-# App Title
-st.title("E-Operation Fund Request App")
+def database_page():
+    st.title("Request Database")
+    global data
+    if data:
+        df = pd.DataFrame(data)
+        st.dataframe(df)
+    else:
+        st.write("No requests have been submitted yet.")
 
-# Form for Fund Request
-st.header("Submit a Fund Request")
-with st.form("fund_request_form"):
-    requester_name = st.text_input("Requester Name")
-    request_purpose = st.text_area("Request Purpose")
-    amount_requested = st.number_input("Amount Requested", min_value=0.0, step=0.01)
-    submit = st.form_submit_button("Submit Request")
+# Streamlit app structure
+st.sidebar.title("Navigation")
+page = st.sidebar.radio("Go to", ["Welcome", "Request Form", "Database"])
 
-    if submit:
-        if requester_name and request_purpose and amount_requested > 0:
-            # Generate Reference ID and Submission Date
-            reference_id = str(uuid.uuid4())[:8]  # Unique 8-character ID
-            submission_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-            # Append data to Google Sheet
-            sheet.append_row([reference_id, submission_date, requester_name, request_purpose, amount_requested])
-
-            st.success(f"Your request has been submitted! Reference ID: {reference_id}")
-        else:
-            st.error("Please fill out all fields correctly.")
-
-# Display Existing Requests
-st.header("Existing Fund Requests")
-data = sheet.get_all_records()
-df = pd.DataFrame(data)
-st.dataframe(df)
+if page == "Welcome":
+    welcome_page()
+elif page == "Request Form":
+    request_form()
+elif page == "Database":
+    database_page()
