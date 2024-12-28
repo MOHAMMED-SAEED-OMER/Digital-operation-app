@@ -51,15 +51,17 @@ def request_form_page():
             reference_id = get_next_reference_id(data)
             submission_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
-            # Append new request
-            new_request = {
+            # Create new request as a DataFrame
+            new_request = pd.DataFrame([{
                 "Reference ID": reference_id,
                 "Request Submission Date": submission_date,
                 "Requester Name": requester_name,
                 "Request Purpose": request_purpose,
                 "Amount Requested": amount_requested,
-            }
-            data = data.append(new_request, ignore_index=True)
+            }])
+            
+            # Concatenate the new request to the existing data
+            data = pd.concat([data, new_request], ignore_index=True)
             
             # Use file lock for safe write
             with FileLock(LOCK_FILE):
