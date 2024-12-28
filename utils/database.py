@@ -7,25 +7,23 @@ LOCK_FILE = DATABASE_FILE + ".lock"
 
 def initialize_database():
     if not os.path.exists(DATABASE_FILE):
-        columns = ["Reference ID", "Request Submission Date", "Requester Name", "Request Purpose", "Amount Requested"]
+        columns = ["Reference ID", "Request Submission Date", "Requester Name", "Request Purpose", "Amount Requested", "Status"]
         pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
 
 def read_data():
     if os.path.exists(DATABASE_FILE):
         return pd.read_csv(DATABASE_FILE)
     else:
-        return pd.DataFrame(columns=["Reference ID", "Request Submission Date", "Requester Name", "Request Purpose", "Amount Requested"])
+        return pd.DataFrame(columns=["Reference ID", "Request Submission Date", "Requester Name", "Request Purpose", "Amount Requested", "Status"])
 
-def write_data(existing_data, new_request):
-    new_data = pd.DataFrame([new_request])
-    updated_data = pd.concat([existing_data, new_data], ignore_index=True)
-
+def write_data(data):
     with FileLock(LOCK_FILE):
-        updated_data.to_csv(DATABASE_FILE, index=False)
+        data.to_csv(DATABASE_FILE, index=False)
 
-def get_next_reference_id(data):
-    if data.empty:
-        return "REQ-001"
-    else:
-        max_id = int(data["Reference ID"].str.split("-").str[1].max())
-        return f"REQ-{max_id + 1:03}"
+def update_request_status(reference_id, status):
+    data = read_data()
+    if reference_id in data["Reference ID"].values:
+        data.loc[data["Reference ID"] == reference_id, "Status"] = status
+        write_data(data)
+        return True
+    return False
