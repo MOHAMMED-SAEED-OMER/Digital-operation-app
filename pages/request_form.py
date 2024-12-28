@@ -23,13 +23,13 @@ def request_form_page():
             submission_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             # Create new request
-            new_request = pd.DataFrame([{
+            new_request = {
                 "Reference ID": reference_id,
                 "Request Submission Date": submission_date,
                 "Requester Name": requester_name,
                 "Request Purpose": request_purpose,
                 "Amount Requested": amount_requested,
-            }])
+            }
 
             # Write to the database
             write_data(data, new_request)
