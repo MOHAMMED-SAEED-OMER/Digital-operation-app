@@ -1,11 +1,8 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import streamlit as st
 from app_pages.welcome_page import welcome_page
 from app_pages.request_form import request_form_page
 from app_pages.database_page import database_page
-
-
+from utils.database import initialize_database
 
 def main():
     # Initialize the database
