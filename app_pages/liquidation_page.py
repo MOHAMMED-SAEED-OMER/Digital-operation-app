@@ -67,6 +67,6 @@ def liquidation_page():
                         )
                         st.success(f"Liquidation details for Request ID {reference_id} updated successfully.")
 
-                        # Clear the session state and trigger a refresh
+                        # Clear the session state and provide a manual refresh button
                         del st.session_state["liquidation_reference_id"]
-                        st.set_query_params(refresh_key=st.session_state.get("refresh_key", 0) + 1)
+                        st.button("Click here to refresh", on_click=lambda: st.experimental_rerun())
