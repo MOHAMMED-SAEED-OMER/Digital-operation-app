@@ -1,3 +1,4 @@
+import pandas as pd  # Add this import
 import streamlit as st
 from datetime import datetime
 from utils.database import read_data, update_liquidation_details
