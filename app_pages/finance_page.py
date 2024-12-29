@@ -28,4 +28,5 @@ def finance_page():
                 issue_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 update_finance_status(row["Reference ID"], "Issued", issue_date)
                 st.success(f"Money issued for Request ID: {row['Reference ID']} on {issue_date}")
-                st.experimental_rerun()  # Refresh the page after updating
+                # Trigger a reload
+                st.session_state["reload_key"] = st.session_state.get("reload_key", 0) + 1
