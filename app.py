@@ -1,19 +1,13 @@
-import streamlit as st
-from app_pages.welcome_page import welcome_page
-from app_pages.request_form import request_form_page
-from app_pages.database_page import database_page
-from app_pages.managers_view import managers_view_page
-from utils.database import initialize_database
+from app_pages.finance_page import finance_page
 
 def main():
-    # Initialize the database
     initialize_database()
 
     # Sidebar navigation
     st.sidebar.title("Navigation")
     page = st.sidebar.radio(
         "Go to",
-        ["Welcome", "Request Form", "Database", "Manager's View"]
+        ["Welcome", "Request Form", "Database", "Manager's View", "Finance Page"]
     )
 
     # Navigate to the selected page
@@ -25,6 +19,5 @@ def main():
         database_page()
     elif page == "Manager's View":
         managers_view_page()
-
-if __name__ == "__main__":
-    main()
+    elif page == "Finance Page":
+        finance_page()
