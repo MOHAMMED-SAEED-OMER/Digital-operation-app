@@ -67,6 +67,9 @@ def liquidation_page():
                         )
                         st.success(f"Liquidation details for Request ID {reference_id} updated successfully.")
 
-                        # Clear the session state and provide a manual refresh button
+                        # Clear the session state
                         del st.session_state["liquidation_reference_id"]
-                        st.button("Click here to refresh", on_click=lambda: st.experimental_rerun())
+
+            # Add the refresh button outside the form
+            if "liquidation_reference_id" not in st.session_state:
+                st.button("Refresh", key="refresh_button", on_click=lambda: st.experimental_rerun())
