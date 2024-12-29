@@ -92,3 +92,16 @@ def update_finance_status(reference_id, finance_status, issue_date=None):
         return True
     return False
 
+def update_liquidation_details(reference_id, liquidated, returned, invoices):
+    """
+    Update the liquidation details for a specific request.
+    """
+    data = read_data()
+    if reference_id in data["Reference ID"].values:
+        data.loc[data["Reference ID"] == reference_id, ["Liquidated", "Returned", "Liquidated Invoices"]] = [
+            liquidated, returned, invoices
+        ]
+        with FileLock(LOCK_FILE):
+            data.to_csv(DATABASE_FILE, index=False)
+        return True
+    return False
