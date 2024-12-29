@@ -9,6 +9,10 @@ def finance_page():
     # Load data
     data = read_data()
 
+    # Ensure "Finance Status" column is string type
+    if "Finance Status" in data.columns:
+        data["Finance Status"] = data["Finance Status"].astype(str)  # Convert to strings if needed
+
     # Filter issued requests
     issued_requests = data[data["Finance Status"].str.strip().str.lower() == "issued"]
 
