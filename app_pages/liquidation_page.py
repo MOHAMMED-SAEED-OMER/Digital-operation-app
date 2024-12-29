@@ -1,4 +1,4 @@
-import pandas as pd  # Add this import
+import pandas as pd
 import streamlit as st
 from datetime import datetime
 from utils.database import read_data, update_liquidation_details
@@ -14,28 +14,25 @@ def liquidation_page():
     if "Finance Status" in data.columns:
         data["Finance Status"] = data["Finance Status"].astype(str)  # Convert to strings if needed
 
-    # Filter issued requests
-    issued_requests = data[data["Finance Status"].str.strip().str.lower() == "issued"]
+    # Filter issued requests that have not been liquidated
+    pending_liquidation_requests = data[
+        (data["Finance Status"].str.strip().str.lower() == "issued") &
+        (pd.isna(data["Liquidated"]) | (data["Liquidated"] == 0))
+    ]
 
-    if issued_requests.empty:
-        st.info("No issued requests to process.")
+    if pending_liquidation_requests.empty:
+        st.info("No pending liquidation requests.")
     else:
-        for i, row in issued_requests.iterrows():
+        for i, row in pending_liquidation_requests.iterrows():
             st.write(f"### Request ID: {row['Reference ID']}")
             st.write(f"- **Requester Name**: {row['Requester Name']}")
             st.write(f"- **Request Purpose**: {row['Request Purpose']}")
             st.write(f"- **Amount Issued**: ${row['Amount Requested']:.2f}")
             st.write(f"- **Issue Date**: {row['Issue Date']}")
-            st.write(f"- **Liquidated**: {row['Liquidated'] if pd.notna(row['Liquidated']) else 'Not yet liquidated'}")
-            st.write(f"- **Returned**: {row['Returned'] if pd.notna(row['Returned']) else 'Not yet returned'}")
 
-            # Check if the request has already been liquidated
-            if pd.isna(row["Liquidated"]) or row["Liquidated"] == 0:
-                # Create a unique key for each button
-                if st.button(f"Liquidate Request {row['Reference ID']}", key=f"liquidate_{row['Reference ID']}"):
-                    st.session_state["liquidation_reference_id"] = row["Reference ID"]
-            else:
-                st.info(f"Request ID {row['Reference ID']} has already been liquidated.")
+            # Create a unique key for each button
+            if st.button(f"Liquidate Request {row['Reference ID']}", key=f"liquidate_{row['Reference ID']}"):
+                st.session_state["liquidation_reference_id"] = row["Reference ID"]
 
         # Check if a request is being liquidated
         if "liquidation_reference_id" in st.session_state:
