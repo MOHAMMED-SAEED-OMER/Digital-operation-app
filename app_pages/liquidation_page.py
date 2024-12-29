@@ -69,5 +69,4 @@ def liquidation_page():
 
                         # Clear the session state and trigger a refresh
                         del st.session_state["liquidation_reference_id"]
-                        st.session_state["refresh_key"] = st.session_state.get("refresh_key", 0) + 1
-                        st.experimental_set_query_params(refresh_key=st.session_state["refresh_key"])
+                        st.set_query_params(refresh_key=st.session_state.get("refresh_key", 0) + 1)
