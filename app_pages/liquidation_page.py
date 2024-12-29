@@ -51,11 +51,14 @@ def liquidation_page():
                 )
                 invoices = st.text_area("Attach Invoice Links (comma-separated)")
 
-                # Validate liquidation and returned amounts
-                if liquidated + returned > request_row["Amount Requested"]:
-                    st.error("The total of liquidated and returned amounts exceeds the issued amount.")
-                else:
-                    if st.form_submit_button("Submit Liquidation"):
+                # Add a submit button inside the form
+                submit = st.form_submit_button("Submit Liquidation")
+
+                # Validate and process the form submission
+                if submit:
+                    if liquidated + returned > request_row["Amount Requested"]:
+                        st.error("The total of liquidated and returned amounts exceeds the issued amount.")
+                    else:
                         update_liquidation_details(
                             reference_id=reference_id,
                             liquidated=liquidated,
