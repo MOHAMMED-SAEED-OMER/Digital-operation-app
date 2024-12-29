@@ -3,7 +3,8 @@ from app_pages.welcome_page import welcome_page
 from app_pages.request_form import request_form_page
 from app_pages.database_page import database_page
 from app_pages.managers_view import managers_view_page
-from app_pages.finance_page import finance_page
+from app_pages.issue_funds_page import issue_funds_page
+from app_pages.liquidation_page import liquidation_page
 from utils.database import initialize_database
 
 def main():
@@ -19,7 +20,8 @@ def main():
             "Request Form",
             "Database",
             "Manager's View",
-            "Finance Page"
+            "Issue Funds",
+            "Liquidation"
         ]
     )
 
@@ -32,8 +34,10 @@ def main():
         database_page()
     elif page == "Manager's View":
         managers_view_page()
-    elif page == "Finance Page":
-        finance_page()
+    elif page == "Issue Funds":
+        issue_funds_page()
+    elif page == "Liquidation":
+        liquidation_page()
 
 if __name__ == "__main__":
     main()
