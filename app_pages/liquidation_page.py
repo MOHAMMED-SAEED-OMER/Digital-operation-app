@@ -64,4 +64,4 @@ def liquidation_page():
                         )
                         st.success(f"Liquidation details for Request ID {reference_id} updated successfully.")
                         del st.session_state["liquidation_reference_id"]  # Clear the session state
-                        st.session_state["reload_key"] = st.session_state.get("reload_key", 0) + 1  # Trigger a page reload
+                        st.experimental_rerun()  # Trigger a page reload
