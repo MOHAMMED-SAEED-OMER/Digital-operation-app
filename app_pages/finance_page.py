@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime
-from utils.database import read_data, update_finance_status
+from utils.database import read_data, update_finance_status, update_liquidation_details
 
 def finance_page():
     st.title("Finance Page")
@@ -9,24 +9,36 @@ def finance_page():
     # Load data
     data = read_data()
 
-    # Filter approved requests that have not been issued
-    approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isna())]
+    # Filter issued requests
+    issued_requests = data[(data["Finance Status"] == "Issued")]
 
-    if approved_requests.empty:
-        st.info("No approved requests to process.")
+    if issued_requests.empty:
+        st.info("No issued requests to process.")
     else:
-        # Display approved requests
-        for i, row in approved_requests.iterrows():
+        for i, row in issued_requests.iterrows():
             st.write(f"### Request ID: {row['Reference ID']}")
             st.write(f"- **Requester Name**: {row['Requester Name']}")
             st.write(f"- **Request Purpose**: {row['Request Purpose']}")
-            st.write(f"- **Amount Requested**: ${row['Amount Requested']:.2f}")
-            st.write(f"- **Approval Status**: {row['Status']}")
+            st.write(f"- **Amount Issued**: ${row['Amount Requested']:.2f}")
+            st.write(f"- **Issue Date**: {row['Issue Date']}")
 
-            # Add an "Issue Money" button
-            if st.button(f"Issue Money for {row['Reference ID']}"):
-                issue_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                update_finance_status(row["Reference ID"], "Issued", issue_date)
-                st.success(f"Money issued for Request ID: {row['Reference ID']} on {issue_date}")
-                # Trigger a reload
-                st.session_state["reload_key"] = st.session_state.get("reload_key", 0) + 1
+            # Add a "Liquidation" button
+            if st.button(f"Liquidate Request {row['Reference ID']}"):
+                with st.form(f"Liquidation Form {row['Reference ID']}"):
+                    liquidated = st.number_input("Amount Liquidated", min_value=0.0, max_value=row['Amount Requested'], format="%.2f")
+                    returned = st.number_input("Amount Returned", min_value=0.0, max_value=row['Amount Requested'], format="%.2f")
+                    invoices = st.text_input("Attach Invoice Links (comma-separated)")
+
+                    # Validate liquidation and returned amounts
+                    if liquidated + returned > row['Amount Requested']:
+                        st.error("The total of liquidated and returned amounts exceeds the issued amount.")
+                    else:
+                        if st.form_submit_button("Submit Liquidation"):
+                            update_liquidation_details(
+                                reference_id=row["Reference ID"],
+                                liquidated=liquidated,
+                                returned=returned,
+                                invoices=invoices
+                            )
+                            st.success(f"Liquidation details for Request ID {row['Reference ID']} updated successfully.")
+                            st.experimental_rerun()  # Refresh the page
