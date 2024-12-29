@@ -25,10 +25,16 @@ def liquidation_page():
             st.write(f"- **Request Purpose**: {row['Request Purpose']}")
             st.write(f"- **Amount Issued**: ${row['Amount Requested']:.2f}")
             st.write(f"- **Issue Date**: {row['Issue Date']}")
+            st.write(f"- **Liquidated**: {row['Liquidated'] if pd.notna(row['Liquidated']) else 'Not yet liquidated'}")
+            st.write(f"- **Returned**: {row['Returned'] if pd.notna(row['Returned']) else 'Not yet returned'}")
 
-            # Create a unique key for each button
-            if st.button(f"Liquidate Request {row['Reference ID']}", key=f"liquidate_{row['Reference ID']}"):
-                st.session_state["liquidation_reference_id"] = row["Reference ID"]
+            # Check if the request has already been liquidated
+            if pd.isna(row["Liquidated"]) or row["Liquidated"] == 0:
+                # Create a unique key for each button
+                if st.button(f"Liquidate Request {row['Reference ID']}", key=f"liquidate_{row['Reference ID']}"):
+                    st.session_state["liquidation_reference_id"] = row["Reference ID"]
+            else:
+                st.info(f"Request ID {row['Reference ID']} has already been liquidated.")
 
         # Check if a request is being liquidated
         if "liquidation_reference_id" in st.session_state:
