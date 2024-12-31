@@ -31,8 +31,9 @@ def edit_page():
         liquidated = st.number_input(
             "Amount Liquidated", min_value=0.0, value=float(selected_request.get("Liquidated", 0.0)), format="%.2f"
         )
+        # Allow negative values for `returned`
         returned = st.number_input(
-            "Amount Returned", min_value=0.0, value=float(selected_request.get("Returned", 0.0)), format="%.2f"
+            "Amount Returned", value=float(selected_request.get("Returned", 0.0)), format="%.2f"
         )
         liquidated_invoices = st.text_area("Liquidated Invoices", selected_request.get("Liquidated Invoices", ""))
 
