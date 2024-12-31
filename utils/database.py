@@ -34,26 +34,7 @@ def initialize_database():
             "Liquidated Invoices"   # Attached invoices (file paths or links)
         ]
         pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
-    else:
-        # Ensure missing columns are added to the existing file
-        data = pd.read_csv(DATABASE_FILE)
-        required_columns = [
-            "Reference ID",
-            "Request Submission Date",
-            "Requester Name",
-            "Request Purpose",
-            "Amount Requested",
-            "Status",
-            "Finance Status",
-            "Issue Date",
-            "Liquidated",
-            "Returned",
-            "Liquidated Invoices"
-        ]
-        for column in required_columns:
-            if column not in data.columns:
-                data[column] = None
-        data.to_csv(DATABASE_FILE, index=False)
+
 
 def read_data():
     """
@@ -70,18 +51,22 @@ def read_data():
             "Amount Requested",
             "Status",
             "Finance Status",
-            "Issue Date",
-            "Liquidated",
-            "Returned",
-            "Liquidated Invoices"
+            "Issue Date"
         ])
 
-def write_data(data):
+def write_data(existing_data, new_request):
     """
-    Save the entire DataFrame back to the database.
+    Add a new request to the existing data and save to the database.
     """
+    # Convert new_request to a DataFrame
+    new_data = pd.DataFrame([new_request])
+
+    # Concatenate new data with the existing data
+    updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+
+    # Save the updated data to the database file
     with FileLock(LOCK_FILE):
-        data.to_csv(DATABASE_FILE, index=False)
+        updated_data.to_csv(DATABASE_FILE, index=False)
 
 def update_request_status(reference_id, status):
     """
@@ -90,7 +75,8 @@ def update_request_status(reference_id, status):
     data = read_data()
     if reference_id in data["Reference ID"].values:
         data.loc[data["Reference ID"] == reference_id, "Status"] = status
-        write_data(data)
+        with FileLock(LOCK_FILE):
+            data.to_csv(DATABASE_FILE, index=False)
         return True
     return False
 
@@ -101,7 +87,8 @@ def update_finance_status(reference_id, finance_status, issue_date=None):
     data = read_data()
     if reference_id in data["Reference ID"].values:
         data.loc[data["Reference ID"] == reference_id, ["Finance Status", "Issue Date"]] = [finance_status, issue_date]
-        write_data(data)
+        with FileLock(LOCK_FILE):
+            data.to_csv(DATABASE_FILE, index=False)
         return True
     return False
 
@@ -114,6 +101,7 @@ def update_liquidation_details(reference_id, liquidated, returned, invoices):
         data.loc[data["Reference ID"] == reference_id, ["Liquidated", "Returned", "Liquidated Invoices"]] = [
             liquidated, returned, invoices
         ]
-        write_data(data)
+        with FileLock(LOCK_FILE):
+            data.to_csv(DATABASE_FILE, index=False)
         return True
     return False
