@@ -1,7 +1,3 @@
-import pandas as pd
-import streamlit as st
-from utils.database import read_data, write_data
-
 def edit_page():
     st.title("Edit Database")
     st.subheader("Modify Existing Requests")
@@ -9,10 +5,23 @@ def edit_page():
     # Load the data
     data = read_data()
 
-    # Ensure there are requests to edit
-    if data.empty:
-        st.info("No requests found in the database.")
-        return
+    # Ensure all required columns are present
+    required_columns = [
+        "Reference ID",
+        "Requester Name",
+        "Request Purpose",
+        "Amount Requested",
+        "Finance Status",
+        "Liquidated",
+        "Returned",
+        "Liquidated Invoices"  # Correct column name
+    ]
+    for column in required_columns:
+        if column not in data.columns:
+            data[column] = None
+
+    # Save the updated DataFrame back to the database
+    write_data(data)
 
     # Display all requests in a table
     st.write("### Existing Requests")
@@ -41,7 +50,7 @@ def edit_page():
         returned = st.number_input(
             "Amount Returned", min_value=0.0, value=float(selected_request["Returned"]), format="%.2f"
         )
-        invoice_links = st.text_area("Invoice Links", selected_request["Invoice Links"])
+        liquidated_invoices = st.text_area("Liquidated Invoices", selected_request["Liquidated Invoices"])  # Updated column name
 
         # Save changes
         if st.button("Save Changes"):
@@ -52,7 +61,7 @@ def edit_page():
             data.loc[data["Reference ID"] == reference_id, "Finance Status"] = finance_status
             data.loc[data["Reference ID"] == reference_id, "Liquidated"] = liquidated
             data.loc[data["Reference ID"] == reference_id, "Returned"] = returned
-            data.loc[data["Reference ID"] == reference_id, "Invoice Links"] = invoice_links
+            data.loc[data["Reference ID"] == reference_id, "Liquidated Invoices"] = liquidated_invoices  # Updated column name
 
             # Save to the database
             write_data(data)
