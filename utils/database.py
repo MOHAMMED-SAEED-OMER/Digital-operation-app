@@ -35,7 +35,6 @@ def initialize_database():
         ]
         pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
 
-
 def read_data():
     """
     Read the database into a Pandas DataFrame.
@@ -51,7 +50,10 @@ def read_data():
             "Amount Requested",
             "Status",
             "Finance Status",
-            "Issue Date"
+            "Issue Date",
+            "Liquidated",
+            "Returned",
+            "Liquidated Invoices"
         ])
 
 def write_data(existing_data, new_request):
@@ -101,6 +103,20 @@ def update_liquidation_details(reference_id, liquidated, returned, invoices):
         data.loc[data["Reference ID"] == reference_id, ["Liquidated", "Returned", "Liquidated Invoices"]] = [
             liquidated, returned, invoices
         ]
+        with FileLock(LOCK_FILE):
+            data.to_csv(DATABASE_FILE, index=False)
+        return True
+    return False
+
+def edit_request(reference_id, updated_request):
+    """
+    Edit the details of a specific request in the database.
+    """
+    data = read_data()
+    if reference_id in data["Reference ID"].values:
+        for key, value in updated_request.items():
+            if key in data.columns:
+                data.loc[data["Reference ID"] == reference_id, key] = value
         with FileLock(LOCK_FILE):
             data.to_csv(DATABASE_FILE, index=False)
         return True
