@@ -5,6 +5,7 @@ from app_pages.database_page import database_page
 from app_pages.managers_view import managers_view_page
 from app_pages.issue_funds_page import issue_funds_page
 from app_pages.liquidation_page import liquidation_page
+from app_pages.edit_page import edit_page  # Import the new Edit Page
 from utils.database import initialize_database
 
 def main():
@@ -21,7 +22,8 @@ def main():
             "Database",
             "Manager's View",
             "Issue Funds",
-            "Liquidation"
+            "Liquidation",
+            "Edit Page"  # Add the Edit Page to the navigation
         ]
     )
 
@@ -38,6 +40,8 @@ def main():
         issue_funds_page()
     elif page == "Liquidation":
         liquidation_page()
+    elif page == "Edit Page":  # Handle the Edit Page
+        edit_page()
 
 if __name__ == "__main__":
     main()
