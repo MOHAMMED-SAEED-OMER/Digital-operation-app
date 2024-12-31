@@ -25,7 +25,7 @@ def edit_page():
             data[column] = None
 
     # Save the updated DataFrame back to the database
-    write_data(data)
+    write_data(data)  # Save after ensuring columns are present
 
     # Display all requests in a table
     st.write("### Existing Requests")
