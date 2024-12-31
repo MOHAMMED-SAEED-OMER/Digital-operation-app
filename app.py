@@ -38,18 +38,25 @@ def main():
 
     # Navigate to the selected page
     if page == "Welcome":
+        st.markdown("<h1 class='center-text'>Welcome to the E-Operation App</h1>", unsafe_allow_html=True)
         welcome_page()
     elif page == "Request Form":
+        st.markdown("<h1 class='center-text'>Submit a New Request</h1>", unsafe_allow_html=True)
         request_form_page()
     elif page == "Database":
+        st.markdown("<h1 class='center-text'>View Database</h1>", unsafe_allow_html=True)
         database_page()
     elif page == "Manager's View":
+        st.markdown("<h1 class='center-text'>Manager's Approval</h1>", unsafe_allow_html=True)
         managers_view_page()
     elif page == "Issue Funds":
+        st.markdown("<h1 class='center-text'>Issue Funds</h1>", unsafe_allow_html=True)
         issue_funds_page()
     elif page == "Liquidation":
+        st.markdown("<h1 class='center-text'>Process Liquidation</h1>", unsafe_allow_html=True)
         liquidation_page()
     elif page == "Edit Page":
+        st.markdown("<h1 class='center-text'>Edit Database</h1>", unsafe_allow_html=True)
         edit_page()
 
 if __name__ == "__main__":
