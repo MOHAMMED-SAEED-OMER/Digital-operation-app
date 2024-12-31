@@ -49,10 +49,8 @@ def edit_page():
             data.loc[data["Reference ID"] == reference_id, "Returned"] = returned
             data.loc[data["Reference ID"] == reference_id, "Liquidated Invoices"] = liquidated_invoices
 
-            # Treat the updated data as a "new request"
-            updated_data = data
-
-            # Use write_data() to overwrite the database
-            write_data(existing_data=pd.DataFrame(), new_request=updated_data)
+            # Overwrite the database by iterating through all rows
+            for _, row in data.iterrows():
+                write_data(existing_data=pd.DataFrame(), new_request=row.to_dict())
 
             st.success(f"Request ID {reference_id} updated successfully!")
