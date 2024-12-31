@@ -43,34 +43,37 @@ def liquidation_page():
             request_row = data[data["Reference ID"] == reference_id].iloc[0]
 
             with st.form(f"Liquidation Form {reference_id}"):
+                # Input the liquidated amount
                 liquidated = st.number_input(
-                    "Amount Liquidated", min_value=0.0, max_value=request_row["Amount Requested"], format="%.2f"
+                    "Amount Liquidated", min_value=0.0, value=0.0, format="%.2f"
                 )
-                returned = st.number_input(
-                    "Amount Returned", min_value=0.0, max_value=request_row["Amount Requested"], format="%.2f"
-                )
+                
+                # Calculate returned amount dynamically
+                returned = request_row["Amount Requested"] - liquidated
+
+                # Display the dynamically calculated returned amount
+                st.write(f"Calculated Amount Returned: ${returned:.2f}")
+
+                # Input for attaching invoice links
                 invoices = st.text_area("Attach Invoice Links (comma-separated)")
 
-                # Add a submit button inside the form
+                # Submit button inside the form
                 submit = st.form_submit_button("Submit Liquidation")
 
                 # Validate and process the form submission
                 if submit:
-                    if liquidated + returned > request_row["Amount Requested"]:
-                        st.error("The total of liquidated and returned amounts exceeds the issued amount.")
-                    else:
-                        update_liquidation_details(
-                            reference_id=reference_id,
-                            liquidated=liquidated,
-                            returned=returned,
-                            invoices=invoices
-                        )
-                        st.success(f"Liquidation details for Request ID {reference_id} updated successfully.")
+                    # Update liquidation details
+                    update_liquidation_details(
+                        reference_id=reference_id,
+                        liquidated=liquidated,
+                        returned=returned,
+                        invoices=invoices
+                    )
+                    st.success(f"Liquidation details for Request ID {reference_id} updated successfully.")
 
-                        # Clear the session state
-                        del st.session_state["liquidation_reference_id"]
+                    # Clear the session state
+                    del st.session_state["liquidation_reference_id"]
 
-                        # Trigger a page refresh using query parameters
-                        refresh_trigger = st.session_state.get("refresh_trigger", 0) + 1
-                        st.session_state["refresh_trigger"] = refresh_trigger
-                        st.query_params = {"refresh": refresh_trigger}
+                    # Trigger a page refresh
+                    st.session_state["refresh_trigger"] = st.session_state.get("refresh_trigger", 0) + 1
+                    st.stop()  # Stop the script to trigger a rerun
