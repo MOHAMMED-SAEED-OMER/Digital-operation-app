@@ -7,8 +7,12 @@ from app_pages.issue_funds_page import issue_funds_page
 from app_pages.liquidation_page import liquidation_page
 from app_pages.edit_page import edit_page  # Import the new Edit Page
 from utils.database import initialize_database
+from utils.design import apply_design  # Import the design file
 
 def main():
+    # Apply design settings
+    apply_design()
+
     # Initialize the database (create if not exists)
     initialize_database()
 
