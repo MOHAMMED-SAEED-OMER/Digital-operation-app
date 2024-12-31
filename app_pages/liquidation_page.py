@@ -70,6 +70,7 @@ def liquidation_page():
                         # Clear the session state
                         del st.session_state["liquidation_reference_id"]
 
-                        # Trigger a page refresh using session state
-                        st.session_state["refresh_trigger"] = st.session_state.get("refresh_trigger", 0) + 1
-                        st.experimental_set_query_params(refresh=str(st.session_state["refresh_trigger"]))
+                        # Trigger a page refresh using query parameters
+                        refresh_trigger = st.session_state.get("refresh_trigger", 0) + 1
+                        st.session_state["refresh_trigger"] = refresh_trigger
+                        st.query_params = {"refresh": refresh_trigger}
