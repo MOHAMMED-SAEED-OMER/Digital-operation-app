@@ -9,24 +9,6 @@ def edit_page():
     # Load the data
     data = read_data()
 
-    # Ensure all required columns are present
-    required_columns = [
-        "Reference ID",
-        "Requester Name",
-        "Request Purpose",
-        "Amount Requested",
-        "Finance Status",
-        "Liquidated",
-        "Returned",
-        "Liquidated Invoices"  # Correct column name
-    ]
-    for column in required_columns:
-        if column not in data.columns:
-            data[column] = None
-
-    # Save the updated DataFrame back to the database
-    write_data(data)  # Save after ensuring columns are present
-
     # Display all requests in a table
     st.write("### Existing Requests")
     st.dataframe(data)
@@ -54,7 +36,7 @@ def edit_page():
         returned = st.number_input(
             "Amount Returned", min_value=0.0, value=float(selected_request["Returned"]), format="%.2f"
         )
-        liquidated_invoices = st.text_area("Liquidated Invoices", selected_request["Liquidated Invoices"])  # Updated column name
+        liquidated_invoices = st.text_area("Liquidated Invoices", selected_request["Liquidated Invoices"])
 
         # Save changes
         if st.button("Save Changes"):
@@ -65,9 +47,12 @@ def edit_page():
             data.loc[data["Reference ID"] == reference_id, "Finance Status"] = finance_status
             data.loc[data["Reference ID"] == reference_id, "Liquidated"] = liquidated
             data.loc[data["Reference ID"] == reference_id, "Returned"] = returned
-            data.loc[data["Reference ID"] == reference_id, "Liquidated Invoices"] = liquidated_invoices  # Updated column name
+            data.loc[data["Reference ID"] == reference_id, "Liquidated Invoices"] = liquidated_invoices
 
-            # Save to the database
-            write_data(data)
+            # Treat the updated data as a "new request"
+            updated_data = data
+
+            # Use write_data() to overwrite the database
+            write_data(existing_data=pd.DataFrame(), new_request=updated_data)
 
             st.success(f"Request ID {reference_id} updated successfully!")
