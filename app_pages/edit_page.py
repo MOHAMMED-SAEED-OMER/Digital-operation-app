@@ -49,4 +49,6 @@ def edit_page():
             }
             edit_request(reference_id, updated_request)
             st.success(f"Request ID {reference_id} updated successfully!")
-            st.experimental_rerun()
+
+            # Refresh the page
+            st.experimental_set_query_params(refresh_key=st.session_state.get("refresh_key", 0) + 1)
