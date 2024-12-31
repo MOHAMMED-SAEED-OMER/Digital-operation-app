@@ -5,9 +5,9 @@ from app_pages.database_page import database_page
 from app_pages.managers_view import managers_view_page
 from app_pages.issue_funds_page import issue_funds_page
 from app_pages.liquidation_page import liquidation_page
-from app_pages.edit_page import edit_page  # Import the new Edit Page
+from app_pages.edit_page import edit_page
 from utils.database import initialize_database
-from utils.design import apply_design  # Import the design file
+from utils.design import apply_design
 
 def main():
     # Apply design settings
@@ -17,19 +17,24 @@ def main():
     initialize_database()
 
     # Sidebar navigation
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio(
-        "Go to",
-        [
-            "Welcome",
-            "Request Form",
-            "Database",
-            "Manager's View",
-            "Issue Funds",
-            "Liquidation",
-            "Edit Page"  # Add the Edit Page to the navigation
-        ]
-    )
+    st.sidebar.markdown("<div class='sidebar-title'>Navigation</div>", unsafe_allow_html=True)
+    page = "Welcome"  # Default page
+
+    # Sidebar menu buttons
+    if st.sidebar.button("🏠 Welcome"):
+        page = "Welcome"
+    if st.sidebar.button("📝 Request Form"):
+        page = "Request Form"
+    if st.sidebar.button("📂 Database"):
+        page = "Database"
+    if st.sidebar.button("🕵️ Manager's View"):
+        page = "Manager's View"
+    if st.sidebar.button("💵 Issue Funds"):
+        page = "Issue Funds"
+    if st.sidebar.button("✅ Liquidation"):
+        page = "Liquidation"
+    if st.sidebar.button("✏️ Edit Page"):
+        page = "Edit Page"
 
     # Navigate to the selected page
     if page == "Welcome":
@@ -44,7 +49,7 @@ def main():
         issue_funds_page()
     elif page == "Liquidation":
         liquidation_page()
-    elif page == "Edit Page":  # Handle the Edit Page
+    elif page == "Edit Page":
         edit_page()
 
 if __name__ == "__main__":
