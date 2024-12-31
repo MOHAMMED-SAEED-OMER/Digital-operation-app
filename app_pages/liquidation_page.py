@@ -70,6 +70,6 @@ def liquidation_page():
                         # Clear the session state
                         del st.session_state["liquidation_reference_id"]
 
-            # Add the refresh button outside the form
-            if "liquidation_reference_id" not in st.session_state:
-                st.button("Refresh", key="refresh_button", on_click=lambda: st.experimental_rerun())
+                        # Trigger a page refresh using session state
+                        st.session_state["refresh_trigger"] = st.session_state.get("refresh_trigger", 0) + 1
+                        st.experimental_set_query_params(refresh=str(st.session_state["refresh_trigger"]))
