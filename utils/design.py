@@ -59,7 +59,3 @@ def apply_design():
             }
         </style>
     """, unsafe_allow_html=True)
-
-    # Add any global markdown or design-specific headers
-    st.markdown("<h1 class='center-text'>Welcome to the E-Operation App</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='center-text'>Streamline your operational processes efficiently.</p>", unsafe_allow_html=True)
