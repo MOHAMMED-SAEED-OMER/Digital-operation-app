@@ -5,6 +5,17 @@ from filelock import FileLock
 DATABASE_FILE = "database.csv"
 LOCK_FILE = DATABASE_FILE + ".lock"
 
+def get_next_reference_id(data):
+    """
+    Generate the next unique transaction ID based on the existing data.
+    """
+    if data.empty or "Transaction ID" not in data.columns:
+        return "TRX-0001"
+    else:
+        # Extract numeric part from Transaction ID and calculate the next ID
+        max_id = data["Transaction ID"].str.extract(r'(\d+)$').astype(int).max()[0]
+        return f"TRX-{max_id + 1:04d}"
+
 def initialize_database():
     """
     Initialize the database with required columns if it does not exist.
