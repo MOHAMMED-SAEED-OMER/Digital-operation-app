@@ -21,17 +21,11 @@ def initialize_database():
     """
     if not os.path.exists(DATABASE_FILE):
         columns = [
-            "Reference ID",
-            "Request Submission Date",
-            "Requester Name",
-            "Request Purpose",
-            "Amount Requested",
-            "Status",               # Approval status (Pending, Approved, Declined)
-            "Finance Status",       # Finance status (Pending, Issued)
-            "Issue Date",           # Date when money was issued
-            "Liquidated",           # Amount spent (liquidated)
-            "Returned",             # Amount returned (remaining)
-            "Liquidated Invoices"   # Attached invoices (file paths or links)
+            "Transaction ID", "Transaction Type", "Date", "Amount",
+            "Source/Purpose", "Category", "Project Name", "Budget Line",
+            "Approval Status", "Finance Status", "Issue Date",
+            "Liquidated", "Liquidation date", "Returned",
+            "Liquidated Invoice link", "Related Request ID", "Details/Notes"
         ]
         pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
 
@@ -43,32 +37,20 @@ def read_data():
         return pd.read_csv(DATABASE_FILE)
     else:
         return pd.DataFrame(columns=[
-            "Reference ID",
-            "Request Submission Date",
-            "Requester Name",
-            "Request Purpose",
-            "Amount Requested",
-            "Status",
-            "Finance Status",
-            "Issue Date",
-            "Liquidated",
-            "Returned",
-            "Liquidated Invoices"
+            "Transaction ID", "Transaction Type", "Date", "Amount",
+            "Source/Purpose", "Category", "Project Name", "Budget Line",
+            "Approval Status", "Finance Status", "Issue Date",
+            "Liquidated", "Liquidation date", "Returned",
+            "Liquidated Invoice link", "Related Request ID", "Details/Notes"
         ])
 
-def write_data(existing_data, new_request):
+def write_data(data):
     """
-    Add a new request to the existing data and save to the database.
+    Save the DataFrame back to the database.
     """
-    # Convert new_request to a DataFrame
-    new_data = pd.DataFrame([new_request])
-
-    # Concatenate new data with the existing data
-    updated_data = pd.concat([existing_data, new_data], ignore_index=True)
-
-    # Save the updated data to the database file
     with FileLock(LOCK_FILE):
-        updated_data.to_csv(DATABASE_FILE, index=False)
+        data.to_csv(DATABASE_FILE, index=False)
+
 
 def update_request_status(reference_id, status):
     """
