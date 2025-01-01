@@ -1,1 +1,13 @@
-Transaction ID,	Transaction Type,	Date,	Amount,	Source/Purpose, Category,	Project Name,		Budget Line,	Approval Status,	Finance Status,	Issue Date,	Liquidated, Liquidation date,	Returned,	Liquidated Invoice link,	Related Request ID,	Details/Notes
+def initialize_database():
+    """
+    Initialize the database with required columns if it does not exist.
+    """
+    if not os.path.exists(DATABASE_FILE):
+        columns = [
+            "Transaction ID", "Transaction Type", "Date", "Amount",
+            "Source/Purpose", "Category", "Project Name", "Budget Line",
+            "Approval Status", "Finance Status", "Issue Date",
+            "Liquidated", "Liquidation date", "Returned",
+            "Liquidated Invoice link", "Related Request ID", "Details/Notes"
+        ]
+        pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
