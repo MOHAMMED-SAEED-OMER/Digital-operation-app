@@ -14,15 +14,11 @@ def apply_design():
 
             /* Sidebar customization */
             .css-1d391kg {
-                background-color: #4CAF50;
+                background-color: #4CAF50; /* Sidebar background color */
                 padding: 10px;
             }
-            .css-1d391kg .css-qbe2hs {
-                color: white;
-            }
-            .css-1d391kg .css-hxt7ib {
-                color: white;
-                font-size: 18px;
+            .css-1d391kg .css-qbe2hs, .css-1d391kg .css-hxt7ib {
+                color: white; /* Text color for sidebar */
             }
             .sidebar-title {
                 color: white;
@@ -50,6 +46,11 @@ def apply_design():
             .menu-button:hover {
                 background-color: #3e8e41;
             }
+            .menu-button-active {
+                background-color: #3e8e41;
+                color: #fff;
+                font-weight: bold;
+            }
 
             /* Centered text */
             .center-text {
@@ -57,5 +58,18 @@ def apply_design():
                 font-family: 'Arial', sans-serif;
                 color: #333;
             }
+
+            /* Add responsiveness for smaller screens */
+            @media (max-width: 768px) {
+                .menu-button {
+                    font-size: 14px;
+                    padding: 8px 16px;
+                }
+                .sidebar-title {
+                    font-size: 20px;
+                }
+            }
         </style>
     """, unsafe_allow_html=True)
+
+    # Apply additional layout adjustments if needed
