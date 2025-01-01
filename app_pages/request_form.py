@@ -6,21 +6,26 @@ def request_form_page():
     st.title("Request Form")
     st.subheader("Submit a New Request")
 
+    # Options for dropdowns
+    requester_names = ["Mohamed", "Abdulla", "Shayma"]
+    project_names = ["Future Proof", "ACUW"]
+    budget_lines = ["1.1.1", "1.1.2", "1.1.3"]
+
     # Form for submitting requests
     with st.form("request_form"):
-        requester_name = st.text_input("Requester Name")
+        requester_name = st.selectbox("Requester Name", requester_names)
+        project_name = st.selectbox("Project Name", project_names)
+        budget_line = st.selectbox("Budget Line", budget_lines)
         request_purpose = st.text_area("Request Purpose")
-        amount_requested = st.number_input("Amount Requested", min_value=0.0, format="%.2f")
-        category = st.text_input("Category")  # New column for the category
-        project_name = st.text_input("Project Name")  # New column for project name
-        budget_line = st.text_input("Budget Line")  # New column for budget line
+        amount_requested = st.number_input("Amount Requested", min_value=1, step=1, format="%d")
+        note = st.text_area("Details/Notes")
 
         # Submit button inside the form
         submit_button = st.form_submit_button("Submit Request")
 
     if submit_button:
         # Validation
-        if not requester_name.strip() or not request_purpose.strip() or amount_requested <= 0:
+        if not request_purpose.strip() or amount_requested <= 0:
             st.error("All fields are required. Please fill out the form completely.")
         else:
             # Read existing data
@@ -37,7 +42,7 @@ def request_form_page():
                 "Date": submission_date,
                 "Amount": amount_requested,
                 "Source/Purpose": request_purpose,
-                "Category": category,
+                "Category": "Expense",  # Fixed category for now
                 "Project Name": project_name,
                 "Budget Line": budget_line,
                 "Approval Status": "Pending",  # Initial approval status
@@ -48,7 +53,7 @@ def request_form_page():
                 "Returned": 0.0,  # Initial returned amount
                 "Liquidated Invoice link": None,
                 "Related Request ID": None,
-                "Details/Notes": None,
+                "Details/Notes": note,
             }
 
             # Write to the database
