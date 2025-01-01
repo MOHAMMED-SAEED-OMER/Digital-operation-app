@@ -1,1 +1,1 @@
-Reference ID,Request Submission Date,Requester Name,Request Purpose,Amount Requested,Status,Finance Status,Issue Date,Liquidated,Returned,Liquidated Invoices
+Transaction ID,	Transaction Type,	Date,	Amount,	Source/Purpose, Category,	Project Name,		Budget Line,	Approval Status,	Finance Status,	Issue Date,	Liquidated, Liquidation date,	Returned,	Liquidated Invoice link,	Related Request ID,	Details/Notes
