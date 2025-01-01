@@ -16,46 +16,47 @@ def main():
     # Initialize the database (create if not exists)
     initialize_database()
 
+    # Initialize session state for page navigation
+    if "current_page" not in st.session_state:
+        st.session_state["current_page"] = "Welcome"  # Default page
+
     # Sidebar navigation
     st.sidebar.markdown("<div class='sidebar-title'>Navigation</div>", unsafe_allow_html=True)
-    page = "Welcome"  # Default page
+    pages = {
+        "🏠 Welcome": "Welcome",
+        "📝 Request Form": "Request Form",
+        "📂 Database": "Database",
+        "🕵️ Manager's View": "Manager's View",
+        "💵 Issue Funds": "Issue Funds",
+        "✅ Liquidation": "Liquidation",
+        "✏️ Edit Page": "Edit Page",
+    }
 
-    # Sidebar menu buttons
-    if st.sidebar.button("🏠 Welcome"):
-        page = "Welcome"
-    if st.sidebar.button("📝 Request Form"):
-        page = "Request Form"
-    if st.sidebar.button("📂 Database"):
-        page = "Database"
-    if st.sidebar.button("🕵️ Manager's View"):
-        page = "Manager's View"
-    if st.sidebar.button("💵 Issue Funds"):
-        page = "Issue Funds"
-    if st.sidebar.button("✅ Liquidation"):
-        page = "Liquidation"
-    if st.sidebar.button("✏️ Edit Page"):
-        page = "Edit Page"
+    for label, page in pages.items():
+        if st.sidebar.button(label, key=page):
+            st.session_state["current_page"] = page
 
     # Navigate to the selected page
-    if page == "Welcome":
+    current_page = st.session_state["current_page"]
+    if current_page == "Welcome":
         st.markdown("<h1 class='center-text'>Welcome to the E-Operation App</h1>", unsafe_allow_html=True)
         welcome_page()
-    elif page == "Request Form":
+    elif current_page == "Request Form":
         st.markdown("<h1 class='center-text'>Submit a New Request</h1>", unsafe_allow_html=True)
         request_form_page()
-    elif page == "Database":
+    elif current_page == "Database":
         st.markdown("<h1 class='center-text'>View Database</h1>", unsafe_allow_html=True)
         database_page()
-    elif page == "Manager's View":
+    elif current_page == "Manager's View":
         st.markdown("<h1 class='center-text'>Manager's Approval</h1>", unsafe_allow_html=True)
         managers_view_page()
-    elif page == "Issue Funds":
+    elif current_page == "Issue Funds":
         st.markdown("<h1 class='center-text'>Issue Funds</h1>", unsafe_allow_html=True)
         issue_funds_page()
-    elif page == "Liquidation":
+    elif current_page == "Liquidation":
         st.markdown("<h1 class='center-text'>Process Liquidation</h1>", unsafe_allow_html=True)
         liquidation_page()
-    elif page == "Edit Page":
+    elif current_page == "Edit Page":
         st.markdown("<h1 class='center-text'>Edit Database</h1>", unsafe_allow_html=True)
         edit_page()
 
