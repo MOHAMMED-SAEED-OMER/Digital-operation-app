@@ -5,15 +5,15 @@ from filelock import FileLock
 DATABASE_FILE = "database.csv"
 LOCK_FILE = DATABASE_FILE + ".lock"
 
-def get_next_reference_id(data):
+def get_next_transaction_id(data):
     """
     Generate the next unique transaction ID based on the existing data.
     """
-    if data.empty or "Transaction ID" not in data.columns:
+    if data.empty or "TRX ID" not in data.columns:
         return "TRX-0001"
     else:
         # Extract numeric part from Transaction ID and calculate the next ID
-        max_id = data["Transaction ID"].str.extract(r'(\d+)$').astype(int).max()[0]
+        max_id = data["TRX ID"].str.extract(r'(\d+)$').astype(int).max()[0]
         return f"TRX-{max_id + 1:04d}"
 
 def initialize_database():
@@ -22,11 +22,11 @@ def initialize_database():
     """
     if not os.path.exists(DATABASE_FILE):
         columns = [
-            "Transaction ID", "Transaction Type", "Date", "Amount",
-            "Source/Purpose", "Category", "Project Name", "Budget Line",
-            "Approval Status", "Finance Status", "Issue Date",
-            "Liquidated", "Liquidation date", "Returned",
-            "Liquidated Invoice link", "Related Request ID", "Details/Notes"
+            "TRX ID", "TRX type", "TRX category", "Project name",
+            "Budget line", "Purpose", "Detail", "Requested Amount",
+            "Approval Status", "Approval date", "Payment status", "Payment date",
+            "Liquidated amount", "Liquidation date", "Returned amount",
+            "Liquidated invoices", "Related request ID", "Remarks"
         ]
         pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
 
@@ -38,11 +38,11 @@ def read_data():
         return pd.read_csv(DATABASE_FILE)
     else:
         return pd.DataFrame(columns=[
-            "Transaction ID", "Transaction Type", "Date", "Amount",
-            "Source/Purpose", "Category", "Project Name", "Budget Line",
-            "Approval Status", "Finance Status", "Issue Date",
-            "Liquidated", "Liquidation date", "Returned",
-            "Liquidated Invoice link", "Related Request ID", "Details/Notes"
+            "TRX ID", "TRX type", "TRX category", "Project name",
+            "Budget line", "Purpose", "Detail", "Requested Amount",
+            "Approval Status", "Approval date", "Payment status", "Payment date",
+            "Liquidated amount", "Liquidation date", "Returned amount",
+            "Liquidated invoices", "Related request ID", "Remarks"
         ])
 
 def write_data(data):
@@ -52,51 +52,76 @@ def write_data(data):
     with FileLock(LOCK_FILE):
         data.to_csv(DATABASE_FILE, index=False)
 
-def update_request_status(transaction_id, status):
+def update_approval_status(trx_id, status):
     """
-    Update the approval status of a specific transaction in the database.
+    Update the approval status and date of a specific transaction in the database.
     """
     data = read_data()
-    if transaction_id in data["Transaction ID"].values:
-        data.loc[data["Transaction ID"] == transaction_id, "Approval Status"] = status
+    if trx_id in data["TRX ID"].values:
+        data.loc[data["TRX ID"] == trx_id, "Approval Status"] = status
+        data.loc[data["TRX ID"] == trx_id, "Approval date"] = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
         write_data(data)
         return True
     return False
 
-def update_finance_status(transaction_id, finance_status, issue_date=None):
+def update_payment_status(trx_id, payment_status, payment_date=None):
     """
-    Update the finance status and issue date for a specific transaction.
-    """
-    data = read_data()
-    if transaction_id in data["Transaction ID"].values:
-        data.loc[data["Transaction ID"] == transaction_id, ["Finance Status", "Issue Date"]] = [finance_status, issue_date]
-        write_data(data)
-        return True
-    return False
-
-def update_liquidation_details(transaction_id, liquidated, returned, invoices):
-    """
-    Update the liquidation details for a specific transaction.
+    Update the payment status and date for a specific transaction.
     """
     data = read_data()
-    if transaction_id in data["Transaction ID"].values:
-        data.loc[data["Transaction ID"] == transaction_id, ["Liquidated", "Returned", "Liquidated Invoice link"]] = [
-            liquidated, returned, invoices
+    if trx_id in data["TRX ID"].values:
+        data.loc[data["TRX ID"] == trx_id, ["Payment status", "Payment date"]] = [
+            payment_status,
+            payment_date or pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
         ]
         write_data(data)
         return True
     return False
 
-def edit_request(transaction_id, updated_request):
+def update_liquidation_details(trx_id, liquidated_amount, invoices):
     """
-    Edit the details of a specific transaction in the database.
+    Update the liquidation details for a specific transaction.
     """
     data = read_data()
-    if transaction_id in data["Transaction ID"].values:
-        for key, value in updated_request.items():
-            if key in data.columns:
-                data.loc[data["Transaction ID"] == transaction_id, key] = value
+    if trx_id in data["TRX ID"].values:
+        requested_amount = data.loc[data["TRX ID"] == trx_id, "Requested Amount"].values[0]
+        returned_amount = requested_amount - liquidated_amount
+
+        data.loc[data["TRX ID"] == trx_id, ["Liquidated amount", "Liquidation date", "Returned amount", "Liquidated invoices"]] = [
+            liquidated_amount,
+            pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S"),
+            returned_amount,
+            invoices
+        ]
         write_data(data)
         return True
     return False
 
+def edit_transaction(trx_id, updated_transaction):
+    """
+    Edit the details of a specific transaction in the database.
+    """
+    data = read_data()
+    if trx_id in data["TRX ID"].values:
+        for key, value in updated_transaction.items():
+            if key in data.columns:
+                data.loc[data["TRX ID"] == trx_id, key] = value
+        write_data(data)
+        return True
+    return False
+
+def ensure_columns_exist(data):
+    """
+    Ensure all required columns exist in the database, add missing columns if needed.
+    """
+    required_columns = [
+        "TRX ID", "TRX type", "TRX category", "Project name",
+        "Budget line", "Purpose", "Detail", "Requested Amount",
+        "Approval Status", "Approval date", "Payment status", "Payment date",
+        "Liquidated amount", "Liquidation date", "Returned amount",
+        "Liquidated invoices", "Related request ID", "Remarks"
+    ]
+    for col in required_columns:
+        if col not in data.columns:
+            data[col] = None
+    return data
