@@ -32,6 +32,7 @@ def main():
         "✏️ Edit Page": "Edit Page",
     }
 
+    # Navigation through sidebar buttons
     for label, page in pages.items():
         if st.sidebar.button(label, key=page):
             st.session_state["current_page"] = page
