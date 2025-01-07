@@ -49,6 +49,21 @@ def write_data(data):
     """
     Save the DataFrame back to the database.
     """
+    # Reorder and align columns before writing
+    expected_columns = [
+        "TRX ID", "TRX type", "TRX category", "Project name", "Budget line", "Purpose", "Detail",
+        "Requested Amount", "Approval Status", "Approval date", "Payment status", "Payment date",
+        "Liquidated amount", "Liquidation date", "Returned amount", "Liquidated invoices",
+        "Related request ID", "Remarks"
+    ]
+    # Ensure the DataFrame contains all expected columns
+    for column in expected_columns:
+        if column not in data.columns:
+            data[column] = None
+
+    # Reorder columns to match the expected structure
+    data = data[expected_columns]
+
     with FileLock(LOCK_FILE):
         data.to_csv(DATABASE_FILE, index=False)
 
