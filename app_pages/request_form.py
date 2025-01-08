@@ -20,7 +20,7 @@ def request_form_page():
         request_purpose = st.text_area("Purpose of the Request")
         details_of_expenses = st.text_area("Details of Expenses")
         total_request_amount = st.number_input("Total Request Amount", min_value=1.0, step=0.01, format="%.2f")
-        comment = st.text_area("Comment")
+        comment = st.text_area("Remarks")
 
         # Submit button inside the form
         submit_button = st.form_submit_button("Submit Request")
@@ -59,7 +59,7 @@ def request_form_page():
                 "Remarks": comment,
             }
 
-            # Append new transaction to the DataFrame using pd.concat
+            # Ensure all columns are aligned with the database structure
             updated_data = pd.concat([data, pd.DataFrame([new_transaction])], ignore_index=True)
 
             # Write the updated data back to the database
