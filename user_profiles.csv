@@ -1,0 +1,4 @@
+User ID,Name,Email,Password,Role,Allowed Pages
+1,John Doe,john@example.com,hashed_password,Manager,"Welcome,Request Form,Database,Manager's View,Issue Funds,Edit Page"
+2,Jane Smith,jane@example.com,hashed_password,Finance,"Welcome,Request Form,Database,Issue Funds"
+3,Mark Lee,mark@example.com,hashed_password,Requester,"Welcome,Request Form,Database"
