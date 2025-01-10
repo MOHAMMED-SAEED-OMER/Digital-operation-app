@@ -26,3 +26,10 @@ def managers_view_page():
         if st.button("Approve"):
             if update_request_status(selected_request, "Approved"):
                 st.success(f"Request {selected_request} has been approved.")
+            else:
+                st.error("Failed to update the request status.")
+        elif st.button("Decline"):
+            if update_request_status(selected_request, "Declined"):
+                st.warning(f"Request {selected_request} has been declined.")
+            else:
+                st.error("Failed to update the request status.")
