@@ -3,13 +3,6 @@ import streamlit as st
 def apply_design():
     st.markdown("""
         <style>
-            /* General background */
-            body {
-                margin: 0;
-                padding: 0;
-                overflow-x: hidden;
-            }
-
             /* Sidebar styling */
             .css-1d391kg {
                 background-color: #2e7d32;
