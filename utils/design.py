@@ -1,50 +1,52 @@
 import streamlit as st
 
 def apply_design():
+    """
+    Apply custom design and styling for the Streamlit app.
+    """
+    # Add custom CSS styles for app design
     st.markdown("""
         <style>
-            /* Sidebar styling */
+            /* General App Styling */
+            .app-header {
+                display: none; /* Hides the global header */
+            }
+
+            /* Background for the sidebar */
             .css-1d391kg {
-                background-color: #2e7d32;
-                color: white;
+                background-color: #f7f9fc;
             }
 
-            /* Sticky navigation bar at the top */
-            .css-18e3th9 {
-                position: sticky;
-                top: 0;
-                z-index: 100;
-                background-color: #2e7d32;
-                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            /* Sidebar title styling */
+            .sidebar-title {
+                color: #333;
+                font-size: 22px;
+                text-align: center;
+                margin-bottom: 20px;
             }
 
-            /* Make headings more prominent */
-            h1, h2, h3, h4, h5, h6 {
-                font-family: Arial, sans-serif;
-            }
-
-            /* Buttons */
-            button {
-                background-color: #4CAF50;
+            /* Button styles */
+            .menu-button {
+                background-color: #007BFF;
                 color: white;
                 border: none;
-                padding: 10px 20px;
+                padding: 10px 15px;
                 text-align: center;
                 font-size: 16px;
-                cursor: pointer;
                 border-radius: 5px;
+                cursor: pointer;
+                margin: 5px 0;
             }
 
-            button:hover {
-                background-color: #45a049;
+            .menu-button:hover {
+                background-color: #0056b3;
             }
 
-            /* Footer or additional content */
-            .footer {
+            /* Centered text */
+            .center-text {
                 text-align: center;
-                margin-top: 20px;
-                color: #666;
-                font-size: 14px;
+                font-family: Arial, sans-serif;
+                color: #555;
             }
         </style>
     """, unsafe_allow_html=True)
