@@ -8,8 +8,12 @@ from app_pages.liquidation_page import liquidation_page
 from app_pages.edit_page import edit_page
 from login_page import login_page
 from utils.database import initialize_database
+from utils.design import apply_design, footer
 
 def main():
+    # Apply custom design
+    apply_design()
+
     # Initialize the database (create if not exists)
     initialize_database()
 
@@ -27,11 +31,8 @@ def main():
         # Logout button
         if st.sidebar.button("Log Out"):
             st.session_state["user_info"] = None
-            if hasattr(st, "set_query_params"):
-                st.set_query_params()  # Use the updated method
-            else:
-                st.experimental_set_query_params()  # Fallback for older versions
-            st.stop()
+            st.experimental_set_query_params()  # Clear query params
+            st.experimental_rerun()
 
         # Sidebar navigation
         allowed_pages = st.session_state["user_info"]["allowed_pages"]
@@ -55,6 +56,9 @@ def main():
             liquidation_page()
         elif page == "Edit Page":
             edit_page()
+
+    # Add footer to the app
+    footer()
 
 if __name__ == "__main__":
     main()
