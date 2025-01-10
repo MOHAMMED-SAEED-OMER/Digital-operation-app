@@ -5,7 +5,7 @@ def login_page():
     """
     Login page for the application.
     """
-    # Apply a custom header with the organization logo and title
+    # Apply custom styles for the login page
     st.markdown("""
         <style>
             .login-container {
@@ -43,7 +43,7 @@ def login_page():
     # Add the logo and titles
     st.markdown("""
         <div class="login-container">
-            <img src="logo.png" alt="Organization Logo" style="max-width: 200px; height: auto;">
+            <img src="Hasar Official Approved Logo in 2023-2.png" alt="Organization Logo" style="max-width: 200px; height: auto;">
             <div class="login-header">Hasar Organization for Climate Action</div>
             <div class="login-subtitle">Electronic Financing and Procurement System</div>
         </div>
@@ -71,10 +71,10 @@ def login_page():
             st.error("Invalid email or password. Please try again.")
 
     # Add contact information
-    st.markdown("""
+    st.markdown(f"""
         <div class="contact-info">
             <p>Website: <a href="https://www.hasar.org" target="_blank">www.hasar.org</a></p>
-            <p>Address: 123 Climate Action Street, Erbil, Kurdistan Region, Iraq</p>
-            <p>Phone: +964-750-123-4567</p>
+            <p>Address: Iraq, Erbil, 120m Street</p>
+            <p>Phone: +9647807810474</p>
         </div>
     """, unsafe_allow_html=True)
