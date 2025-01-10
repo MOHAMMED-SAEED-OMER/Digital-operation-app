@@ -42,7 +42,7 @@ def login_page():
 
     # Add the image using Streamlit's st.image()
     image_path = "Cover-photo.png"  # Ensure the image file is in the same directory or update the path
-    st.image(image_path, use_column_width=True)
+    st.image(image_path, use_container_width=True)  # Updated to use_container_width
 
     # Add titles
     st.markdown("""
