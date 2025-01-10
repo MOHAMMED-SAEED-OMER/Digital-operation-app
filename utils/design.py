@@ -1,91 +1,57 @@
 import streamlit as st
 
 def apply_design():
-    """
-    Apply custom design and styling for the Streamlit app.
-    """
     st.markdown("""
         <style>
-            /* General Background */
-            .css-1v3fvcr {
-                background-color: #f4f7fc;  /* Light gray background */
+            /* General background */
+            body {
+                margin: 0;
+                padding: 0;
+                overflow-x: hidden;
             }
 
-            /* Sidebar Customization */
+            /* Sidebar styling */
             .css-1d391kg {
-                background-color: #2e7d32;  /* Dark green for sidebar */
-                padding: 20px;
-            }
-            .css-1d391kg .css-qbe2hs {
-                color: white;  /* Sidebar text color */
-            }
-            .css-1d391kg .css-hxt7ib {
-                color: white;
-                font-size: 18px;
-                font-family: Arial, sans-serif;
-                font-weight: bold;
-            }
-
-            /* Sidebar Title */
-            .sidebar-title {
-                color: white;
-                font-size: 24px;
-                text-align: center;
-                font-family: Arial, sans-serif;
-                margin-bottom: 20px;
-            }
-
-            /* Tabs Customization */
-            div[data-testid="stHorizontalBlock"] {
-                border-bottom: 2px solid #2e7d32; /* Green border under tabs */
-                margin-bottom: 10px;
-            }
-            div[data-testid="stHorizontalBlock"] > div > div {
-                border: 1px solid #2e7d32;  /* Green border around tabs */
-                border-radius: 10px;
-                padding: 5px;
-                font-family: Arial, sans-serif;
-                font-weight: bold;
-                background-color: #ffffff;  /* White background for tabs */
-                margin-right: 10px;
-            }
-            div[data-testid="stHorizontalBlock"] > div > div:hover {
-                background-color: #f1f8f2; /* Light green hover effect */
-            }
-            div[data-testid="stHorizontalBlock"] > div > div[aria-selected="true"] {
-                background-color: #2e7d32; /* Highlighted tab color */
+                background-color: #2e7d32;
                 color: white;
             }
 
-            /* Headers */
-            h1 {
-                color: #2e7d32; /* Green headers */
-                font-family: 'Arial', sans-serif;
-                font-weight: bold;
-                text-align: center;
-                margin-top: 0px;
+            /* Sticky navigation bar at the top */
+            .css-18e3th9 {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                background-color: #2e7d32;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Make headings more prominent */
+            h1, h2, h3, h4, h5, h6 {
+                font-family: Arial, sans-serif;
             }
 
             /* Buttons */
             button {
-                font-family: Arial, sans-serif;
-                font-size: 16px;
-                padding: 10px 20px;
-                background-color: #2e7d32; /* Button background green */
-                color: white; /* Button text color */
+                background-color: #4CAF50;
+                color: white;
                 border: none;
-                border-radius: 5px;
+                padding: 10px 20px;
+                text-align: center;
+                font-size: 16px;
                 cursor: pointer;
-            }
-            button:hover {
-                background-color: #256528; /* Darker green on hover */
+                border-radius: 5px;
             }
 
-            /* Adjust container width for cleaner layout */
-            .block-container {
-                padding: 20px;
-                max-width: 1200px;
-                margin: auto;
+            button:hover {
+                background-color: #45a049;
+            }
+
+            /* Footer or additional content */
+            .footer {
+                text-align: center;
+                margin-top: 20px;
+                color: #666;
+                font-size: 14px;
             }
         </style>
     """, unsafe_allow_html=True)
