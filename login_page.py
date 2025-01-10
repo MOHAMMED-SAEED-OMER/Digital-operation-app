@@ -37,11 +37,24 @@ def login_page():
             .contact-info a:hover {
                 text-decoration: underline;
             }
+            .rectangular-image {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%; /* Adjust width percentage */
+                max-width: 600px; /* Set a maximum width */
+                height: auto; /* Maintain aspect ratio */
+                border-radius: 5px; /* Optional: Add rounded corners */
+            }
         </style>
     """, unsafe_allow_html=True)
 
-    # Add the logo using st.image
-    st.image("hasar photo 2.jpeg", use_container_width=True, caption="Hasar Organization Logo")
+    # Add the rectangular image
+    st.markdown(f"""
+        <div>
+            <img src="hasar photo 2.jpeg" class="rectangular-image" alt="Hasar Organization">
+        </div>
+    """, unsafe_allow_html=True)
 
     # Add titles
     st.markdown("""
