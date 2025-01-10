@@ -1,88 +1,61 @@
 import streamlit as st
-import pandas as pd
+from app_pages.welcome_page import welcome_page
+from app_pages.request_form import request_form_page
+from app_pages.database_page import database_page
+from app_pages.managers_view import managers_view_page
+from app_pages.issue_funds_page import issue_funds_page
+from app_pages.liquidation_page import liquidation_page
+from app_pages.edit_page import edit_page
+from login_page import login_page
+from utils.database import initialize_database
 
-def login_page():
-    """
-    Login page for the application.
-    """
-    # Apply custom styles for the login page
-    st.markdown("""
-        <style>
-            .login-container {
-                text-align: center;
-                margin-top: 30px;
-            }
-            .login-header {
-                font-size: 32px;
-                font-weight: bold;
-                color: #0056b3;
-                margin-top: 10px;
-                margin-bottom: 5px;
-            }
-            .login-subtitle {
-                font-size: 18px;
-                color: #444444;
-                margin-bottom: 20px;
-            }
-            .contact-info {
-                text-align: center;
-                font-size: 14px;
-                color: #666666;
-                margin-top: 20px;
-            }
-            .contact-info a {
-                color: #0056b3;
-                text-decoration: none;
-            }
-            .contact-info a:hover {
-                text-decoration: underline;
-            }
-        </style>
-    """, unsafe_allow_html=True)
+def main():
+    # Initialize the database (create if not exists)
+    initialize_database()
 
-    # Add the image using Streamlit's st.image()
-    image_path = "Cover-photo.png"  # Ensure the image file is in the same directory or update the path
-    st.image(image_path, use_container_width=True)
+    # Check if user is logged in
+    if "user_info" not in st.session_state:
+        st.session_state["user_info"] = None
 
-    # Add titles
-    st.markdown("""
-        <div class="login-container">
-            <div class="login-header">Hasar Organization for Climate Action</div>
-            <div class="login-subtitle">Electronic Financing and Procurement System</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # Login form
-    st.subheader("Login")
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        # Load user profiles
-        user_profiles = pd.read_csv("user_profiles.csv")
-
-        # Validate credentials
-        user = user_profiles[(user_profiles["Email"] == email) & (user_profiles["Password"] == password)]
-        if not user.empty:
-            st.session_state["user_info"] = {
-                "name": user.iloc[0]["Name"],
-                "role": user.iloc[0]["Role"],
-                "allowed_pages": user.iloc[0]["Allowed Pages"].split(",")
-            }
-            st.success("Login successful! Redirecting...")
-            
+    if st.session_state["user_info"] is None:
+        login_page()
+    else:
+        # Logged-in user interface
+        st.sidebar.title("Navigation")
+        st.sidebar.markdown(f"Welcome, **{st.session_state['user_info']['name']}**!")
+        
+        # Logout button
+        if st.sidebar.button("Log Out"):
+            st.session_state["user_info"] = None
             # Mimic rerun using query parameter manipulation
             if hasattr(st, "set_query_params"):
                 st.set_query_params(refresh=True)  # Mimic app rerun
             else:
-                st.experimental_set_query_params(refresh=True)
-        else:
-            st.error("Invalid email or password. Please try again.")
+                st.experimental_set_query_params(refresh=True)  # Fallback for older versions
+            st.stop()
 
-    # Add contact information
-    st.markdown(f"""
-        <div class="contact-info">
-            <p>Website: <a href="https://www.hasar.org" target="_blank">www.hasar.org</a></p>
-            <p>Address: Iraq, Erbil, 120m Street</p>
-            <p>Phone: +9647807810474</p>
-        </div>
-    """, unsafe_allow_html=True)
+        # Sidebar navigation
+        allowed_pages = st.session_state["user_info"]["allowed_pages"]
+        page = st.sidebar.radio(
+            "Go to",
+            allowed_pages
+        )
+
+        # Navigate to the selected page
+        if page == "Welcome":
+            welcome_page()
+        elif page == "Request Form":
+            request_form_page()
+        elif page == "Database":
+            database_page()
+        elif page == "Manager's View":
+            managers_view_page()
+        elif page == "Issue Funds":
+            issue_funds_page()
+        elif page == "Liquidation":
+            liquidation_page()
+        elif page == "Edit Page":
+            edit_page()
+
+if __name__ == "__main__":
+    main()
