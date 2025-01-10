@@ -43,11 +43,13 @@ def login_page():
     # Add the logo and titles
     st.markdown("""
         <div class="login-container">
-            <img src="Hasar Official Approved Logo in 2023-2.png" alt="Organization Logo" style="max-width: 200px; height: auto;">
             <div class="login-header">Hasar Organization for Climate Action</div>
             <div class="login-subtitle">Electronic Financing and Procurement System</div>
         </div>
     """, unsafe_allow_html=True)
+
+    # Display the logo
+    st.image("Hasar Official Approved Logo in 2023-2.png", use_column_width=True)
 
     # Login form
     st.subheader("Login")
