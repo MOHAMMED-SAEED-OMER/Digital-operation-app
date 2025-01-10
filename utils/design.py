@@ -6,107 +6,86 @@ def apply_design():
     """
     st.markdown("""
         <style>
-            /* General app background */
-            .appview-container {
-                background-color: #f8f9fc;
-                color: #333333;
-                font-family: 'Arial', sans-serif;
+            /* General Background */
+            .css-1v3fvcr {
+                background-color: #f4f7fc;  /* Light gray background */
             }
 
-            /* Sidebar customization */
+            /* Sidebar Customization */
             .css-1d391kg {
-                background-color: #0056b3; /* Navy Blue */
-                padding: 10px;
+                background-color: #2e7d32;  /* Dark green for sidebar */
+                padding: 20px;
             }
             .css-1d391kg .css-qbe2hs {
-                color: white;
+                color: white;  /* Sidebar text color */
             }
             .css-1d391kg .css-hxt7ib {
                 color: white;
                 font-size: 18px;
+                font-family: Arial, sans-serif;
                 font-weight: bold;
             }
+
+            /* Sidebar Title */
             .sidebar-title {
                 color: white;
                 font-size: 24px;
                 text-align: center;
+                font-family: Arial, sans-serif;
                 margin-bottom: 20px;
             }
-            .sidebar-subtitle {
-                color: white;
-                font-size: 16px;
-                text-align: center;
+
+            /* Tabs Customization */
+            div[data-testid="stHorizontalBlock"] {
+                border-bottom: 2px solid #2e7d32; /* Green border under tabs */
                 margin-bottom: 10px;
-                font-style: italic;
             }
-
-            /* Buttons in the sidebar */
-            .css-1d391kg .css-10trblm {
-                background-color: #0171f5;
-                color: white;
-                border: none;
-                font-size: 16px;
+            div[data-testid="stHorizontalBlock"] > div > div {
+                border: 1px solid #2e7d32;  /* Green border around tabs */
+                border-radius: 10px;
+                padding: 5px;
+                font-family: Arial, sans-serif;
                 font-weight: bold;
-                padding: 8px 12px;
-                margin: 4px 0;
-                border-radius: 5px;
+                background-color: #ffffff;  /* White background for tabs */
+                margin-right: 10px;
             }
-            .css-1d391kg .css-10trblm:hover {
-                background-color: #014bb5; /* Darker navy */
+            div[data-testid="stHorizontalBlock"] > div > div:hover {
+                background-color: #f1f8f2; /* Light green hover effect */
+            }
+            div[data-testid="stHorizontalBlock"] > div > div[aria-selected="true"] {
+                background-color: #2e7d32; /* Highlighted tab color */
+                color: white;
             }
 
-            /* Headers in the main app */
+            /* Headers */
             h1 {
-                color: #0056b3;
-                font-size: 32px;
-                font-weight: bold;
-                text-align: center;
-                margin-bottom: 20px;
-            }
-
-            h2 {
-                color: #333333;
-                font-size: 24px;
-                font-weight: bold;
-                margin-bottom: 15px;
-            }
-
-            h3 {
-                color: #444444;
-                font-size: 20px;
-                font-weight: normal;
-                margin-bottom: 10px;
-            }
-
-            /* Dataframe and table styles */
-            .stDataFrame {
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                background-color: #ffffff;
-                font-size: 14px;
+                color: #2e7d32; /* Green headers */
                 font-family: 'Arial', sans-serif;
+                font-weight: bold;
+                text-align: center;
+                margin-top: 0px;
             }
 
-            /* Footer design */
-            .footer {
-                position: fixed;
-                bottom: 0;
-                width: 100%;
-                background-color: #0056b3;
-                color: white;
-                text-align: center;
-                padding: 10px 0;
-                font-size: 14px;
+            /* Buttons */
+            button {
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                padding: 10px 20px;
+                background-color: #2e7d32; /* Button background green */
+                color: white; /* Button text color */
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #256528; /* Darker green on hover */
+            }
+
+            /* Adjust container width for cleaner layout */
+            .block-container {
+                padding: 20px;
+                max-width: 1200px;
+                margin: auto;
             }
         </style>
-    """, unsafe_allow_html=True)
-
-def footer():
-    """
-    Add a footer for the app.
-    """
-    st.markdown("""
-        <div class="footer">
-            Financing and Procurement System | Powered by Streamlit
-        </div>
     """, unsafe_allow_html=True)
