@@ -37,19 +37,32 @@ def login_page():
             .contact-info a:hover {
                 text-decoration: underline;
             }
+            .logo-container {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+            }
+            .logo-container img {
+                width: 150px; /* Adjust the logo size */
+                height: auto;
+            }
         </style>
     """, unsafe_allow_html=True)
 
-    # Add the logo and titles
+    # Add the logo at the top-right
+    st.markdown("""
+        <div class="logo-container">
+            <img src="Hasar Official Approved Logo in 2023-2.png" alt="Hasar Logo">
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Add the main title and subtitle
     st.markdown("""
         <div class="login-container">
             <div class="login-header">Hasar Organization for Climate Action</div>
             <div class="login-subtitle">Electronic Financing and Procurement System</div>
         </div>
     """, unsafe_allow_html=True)
-
-    # Display the logo
-    st.image("Hasar Official Approved Logo in 2023-2.png", use_container_width=True)
 
     # Login form
     st.subheader("Login")
