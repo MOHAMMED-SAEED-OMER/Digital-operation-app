@@ -49,7 +49,7 @@ def login_page():
     """, unsafe_allow_html=True)
 
     # Display the logo
-    st.image("Hasar Official Approved Logo in 2023-2.png", use_column_width=True)
+    st.image("Hasar Official Approved Logo in 2023-2.png", use_container_width=True)
 
     # Login form
     st.subheader("Login")
