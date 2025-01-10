@@ -26,14 +26,15 @@ def initialize_database():
             "Requester Name",
             "Request Purpose",
             "Amount Requested",
-            "Status",               # Approval status (Pending, Approved, Declined)
-            "Finance Status",       # Finance status (Pending, Issued)
-            "Issue Date",           # Date when money was issued
-            "Liquidated",           # Amount spent (liquidated)
-            "Returned",             # Amount returned (remaining)
-            "Liquidated Invoices"   # Attached invoices (file paths or links)
+            "Status",  # Approval status (Pending, Approved, Declined)
+            "Finance Status",  # Finance status (Pending, Issued)
+            "Issue Date",  # Date when money was issued
+            "Liquidated",  # Amount spent (liquidated)
+            "Returned",  # Amount returned (remaining)
+            "Liquidated Invoices"  # Attached invoices (file paths or links)
         ]
         pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
+
 
 def read_data():
     """
