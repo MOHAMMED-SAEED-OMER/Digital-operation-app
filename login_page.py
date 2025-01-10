@@ -37,25 +37,12 @@ def login_page():
             .contact-info a:hover {
                 text-decoration: underline;
             }
-            .rectangular-image {
-                display: block;
-                margin-left: auto;
-                margin-right: auto;
-                width: 100%; /* Adjust width percentage */
-                max-width: 600px; /* Set a maximum width */
-                height: auto; /* Maintain aspect ratio */
-                border-radius: 5px; /* Optional: Add rounded corners */
-            }
         </style>
     """, unsafe_allow_html=True)
 
-    # Add the rectangular image
-    image_path = "BreadcrumbsE-operation-app/Cover-photo.png"
-    st.markdown(f"""
-        <div>
-            <img src="{image_path}" class="rectangular-image" alt="Hasar Organization">
-        </div>
-    """, unsafe_allow_html=True)
+    # Add the image using Streamlit's st.image()
+    image_path = "Cover-photo.png"  # Ensure the image file is in the same directory or update the path
+    st.image(image_path, use_column_width=True)
 
     # Add titles
     st.markdown("""
