@@ -50,9 +50,10 @@ def login_page():
     """, unsafe_allow_html=True)
 
     # Add the rectangular image
+    image_path = "E-operation-app/international-day-of-climate-action-hero-AdobeStock_872053544.jpg"
     st.markdown(f"""
         <div>
-            <img src="hasar photo 2.jpeg" class="rectangular-image" alt="Hasar Organization">
+            <img src="{image_path}" class="rectangular-image" alt="Hasar Organization">
         </div>
     """, unsafe_allow_html=True)
 
