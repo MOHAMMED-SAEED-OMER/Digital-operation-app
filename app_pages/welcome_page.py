@@ -6,3 +6,4 @@ def welcome_page():
         - **Submit Requests:** Use the form to submit a new request.
         - **View Database:** View all submitted requests.
     """)
+
