@@ -27,10 +27,7 @@ def main():
         # Logout button
         if st.sidebar.button("Log Out"):
             st.session_state["user_info"] = None
-            if hasattr(st, "set_query_params"):
-                st.set_query_params()  # Use the updated method
-            else:
-                st.experimental_set_query_params()  # Fallback for older versions
+            st.set_query_params()  # Clear query parameters for clean state
             st.stop()
 
         # Sidebar navigation
