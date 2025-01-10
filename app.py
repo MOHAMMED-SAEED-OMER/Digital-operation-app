@@ -1,33 +1,61 @@
 import streamlit as st
-import pandas as pd
+from app_pages.welcome_page import welcome_page
+from app_pages.request_form import request_form_page
+from app_pages.database_page import database_page
+from app_pages.managers_view import managers_view_page
+from app_pages.issue_funds_page import issue_funds_page
+from app_pages.liquidation_page import liquidation_page
+from app_pages.edit_page import edit_page
+from login_page import login_page
+from utils.database import initialize_database
 
-def login_page():
-    st.title("Login")
+def main():
+    # Initialize the database (create if not exists)
+    initialize_database()
 
-    # Load user profiles
-    user_profiles = pd.read_csv("user_profiles.csv")
+    # Check if user is logged in
+    if "user_info" not in st.session_state:
+        st.session_state["user_info"] = None
 
-    # Input fields for login
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-
-    if st.button("Login"):
-        # Validate user credentials
-        user = user_profiles[
-            (user_profiles["Email"] == email) & (user_profiles["Password"] == password)
-        ]
-        if not user.empty:
-            # Login successful
-            st.session_state["user_info"] = {
-                "name": user.iloc[0]["Name"],
-                "role": user.iloc[0]["Role"],
-                "allowed_pages": user.iloc[0]["Allowed Pages"].split(","),
-            }
-            # Update query parameters to refresh the page
+    if st.session_state["user_info"] is None:
+        login_page()
+    else:
+        # Logged-in user interface
+        st.sidebar.title("Navigation")
+        st.sidebar.markdown(f"Welcome, **{st.session_state['user_info']['name']}**!")
+        
+        # Logout button
+        if st.sidebar.button("Log Out"):
+            st.session_state["user_info"] = None
+            # Update query parameters to refresh the app state
             if hasattr(st, "set_query_params"):
                 st.set_query_params()  # Use the updated method
             else:
                 st.experimental_set_query_params()  # Fallback for older versions
             st.experimental_rerun()
-        else:
-            st.error("Invalid email or password. Please try again.")
+
+        # Sidebar navigation
+        allowed_pages = st.session_state["user_info"]["allowed_pages"]
+        page = st.sidebar.radio(
+            "Go to",
+            allowed_pages
+        )
+
+        # Navigate to the selected page
+        if page == "Welcome":
+            welcome_page()
+        elif page == "Request Form":
+            request_form_page()
+        elif page == "Database":
+            database_page()
+        elif page == "Manager's View":
+            managers_view_page()
+        elif page == "Issue Funds":
+            issue_funds_page()
+        elif page == "Liquidation":
+            liquidation_page()
+        elif page == "Edit Page":
+            edit_page()
+
+if __name__ == "__main__":
+    main()
