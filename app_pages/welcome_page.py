@@ -1,9 +1,36 @@
 import streamlit as st
 
 def welcome_page():
-    st.title("Welcome to the E-Operation App")
+    # Welcome content section
     st.markdown("""
-        - **Submit Requests:** Use the form to submit a new request.
-        - **View Database:** View all submitted requests..
-    """)
+        <div style="text-align: center; margin-top: 20px;">
+            <h2>Welcome to the E-Operation App</h2>
+            <p style="font-size: 18px; line-height: 1.6; color: #4CAF50;">
+                Streamline your organization's financing and procurement processes with our user-friendly platform.
+                Submit, track, and manage all your requests effortlessly in one place.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
+    # Features section
+    st.markdown("""
+        <div style="margin-top: 40px;">
+            <h3 style="color: #2e7d32;">Key Features</h3>
+            <ul style="font-size: 16px; line-height: 1.8; color: #333;">
+                <li><strong>Submit Requests:</strong> Use the form to submit new financing or procurement requests.</li>
+                <li><strong>Track Progress:</strong> View and monitor the status of submitted requests in the database.</li>
+                <li><strong>Manager's View:</strong> Approve or decline requests with ease.</li>
+                <li><strong>Liquidation Processing:</strong> Simplify liquidation tasks with our integrated tools.</li>
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Additional CTA or footer section
+    st.markdown("""
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background-color: #f1f8f2; border-radius: 10px;">
+            <h4 style="color: #4CAF50;">Ready to get started?</h4>
+            <p style="font-size: 16px; color: #333;">
+                Navigate through the sidebar to explore all features and tools tailored to your role.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
