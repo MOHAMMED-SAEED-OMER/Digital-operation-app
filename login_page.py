@@ -3,17 +3,21 @@ import pandas as pd
 
 def login_page():
     """
-    Login page for the application.
+    Login page for the application with enhanced visuals.
     """
     # Apply custom styles for the login page
     st.markdown("""
         <style>
+            body {
+                background-color: #f7f7f7;
+                font-family: Arial, sans-serif;
+            }
             .login-container {
                 text-align: center;
                 margin-top: 50px;
             }
             .login-header {
-                font-size: 32px;
+                font-size: 36px;
                 font-weight: bold;
                 color: #0056b3;
                 margin-top: 20px;
@@ -21,14 +25,36 @@ def login_page():
             }
             .login-subtitle {
                 font-size: 18px;
-                color: #444444;
-                margin-bottom: 30px;
+                color: #666666;
+                margin-bottom: 20px;
+            }
+            .login-form {
+                margin: 30px auto;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                max-width: 400px;
+                background-color: #ffffff;
+                box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            .login-button {
+                background-color: #0056b3;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                margin-top: 10px;
+            }
+            .login-button:hover {
+                background-color: #004494;
             }
             .contact-info {
-                text-align: center;
-                font-size: 14px;
-                color: #666666;
                 margin-top: 30px;
+                font-size: 14px;
+                color: #444444;
+                text-align: center;
             }
             .contact-info a {
                 color: #0056b3;
@@ -38,25 +64,26 @@ def login_page():
                 text-decoration: underline;
             }
             .logo-container {
-                position: absolute;
-                top: 20px;
-                right: 20px;
+                text-align: right;
+                margin-top: -50px;
+                margin-right: 10px;
+                position: relative;
             }
             .logo-container img {
-                width: 150px; /* Adjust the logo size */
+                width: 120px; /* Adjust logo size */
                 height: auto;
             }
         </style>
     """, unsafe_allow_html=True)
 
-    # Add the logo at the top-right
+    # Display the logo at the top-right
     st.markdown("""
         <div class="logo-container">
             <img src="Hasar Official Approved Logo in 2023-2.png" alt="Hasar Logo">
         </div>
     """, unsafe_allow_html=True)
 
-    # Add the main title and subtitle
+    # Main title and subtitle
     st.markdown("""
         <div class="login-container">
             <div class="login-header">Hasar Organization for Climate Action</div>
@@ -65,10 +92,13 @@ def login_page():
     """, unsafe_allow_html=True)
 
     # Login form
-    st.subheader("Login")
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
+    st.markdown("""
+        <div class="login-form">
+            <h3>Login</h3>
+    """, unsafe_allow_html=True)
+    email = st.text_input("Email", key="login_email")
+    password = st.text_input("Password", type="password", key="login_password")
+    if st.button("Login", key="login_button"):
         # Load user profiles
         user_profiles = pd.read_csv("user_profiles.csv")
 
@@ -85,11 +115,13 @@ def login_page():
         else:
             st.error("Invalid email or password. Please try again.")
 
-    # Add contact information
+    st.markdown("</div>", unsafe_allow_html=True)  # Close login-form
+
+    # Contact information
     st.markdown(f"""
         <div class="contact-info">
-            <p>Website: <a href="https://www.hasar.org" target="_blank">www.hasar.org</a></p>
-            <p>Address: Iraq, Erbil, 120m Street</p>
-            <p>Phone: +9647807810474</p>
+            <p><strong>Website:</strong> <a href="https://www.hasar.org" target="_blank">www.hasar.org</a></p>
+            <p><strong>Address:</strong> Iraq, Erbil, 120m Street</p>
+            <p><strong>Phone:</strong> +9647807810474</p>
         </div>
     """, unsafe_allow_html=True)
