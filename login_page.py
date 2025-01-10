@@ -42,7 +42,7 @@ def login_page():
 
     # Add the image using Streamlit's st.image()
     image_path = "Cover-photo.png"  # Ensure the image file is in the same directory or update the path
-    st.image(image_path, use_container_width=True)  # Updated to use_container_width
+    st.image(image_path, use_container_width=True)
 
     # Add titles
     st.markdown("""
@@ -69,7 +69,12 @@ def login_page():
                 "allowed_pages": user.iloc[0]["Allowed Pages"].split(",")
             }
             st.success("Login successful! Redirecting...")
-            st.experimental_rerun()
+            
+            # Mimic rerun using query parameter manipulation
+            if hasattr(st, "set_query_params"):
+                st.set_query_params(refresh=True)  # Mimic app rerun
+            else:
+                st.experimental_set_query_params(refresh=True)
         else:
             st.error("Invalid email or password. Please try again.")
 
