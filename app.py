@@ -27,7 +27,7 @@ def main():
         # Logout button
         if st.sidebar.button("Log Out"):
             st.session_state["user_info"] = None
-            st.experimental_set_query_params()  # Mimic a rerun to refresh the app
+            st.set_query_params()  # Mimic a rerun to refresh the app
             st.stop()
 
         # Sidebar navigation
