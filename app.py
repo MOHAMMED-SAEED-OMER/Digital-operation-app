@@ -25,7 +25,7 @@ def main():
         st.sidebar.markdown(f"Welcome, **{st.session_state['user_info']['name']}**!")
         
         # Logout button
-       if st.sidebar.button("Log Out"):
+     if st.sidebar.button("Log Out"):
     st.session_state["user_info"] = None
     if hasattr(st, "set_query_params"):
         st.set_query_params()  # Use the updated method
