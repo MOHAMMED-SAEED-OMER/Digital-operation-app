@@ -14,7 +14,7 @@ def welcome_page():
 
     # Features section
     st.markdown("""
-        <div style="margin-top: 40px;">
+        <div style="margin-top: 40px; padding: 20px; background-color: #f1f8f2; border-radius: 10px;">
             <h3 style="color: #2e7d32;">Key Features</h3>
             <ul style="font-size: 16px; line-height: 1.8; color: #333;">
                 <li><strong>Submit Requests:</strong> Use the form to submit new financing or procurement requests.</li>
@@ -25,12 +25,11 @@ def welcome_page():
         </div>
     """, unsafe_allow_html=True)
 
-    # Additional CTA or footer section
+    # Call-to-Action Footer
     st.markdown("""
-        <div style="text-align: center; margin-top: 40px; padding: 20px; background-color: #f1f8f2; border-radius: 10px;">
-            <h4 style="color: #4CAF50;">Ready to get started?</h4>
+        <div class="footer">
             <p style="font-size: 16px; color: #333;">
-                Navigate through the sidebar to explore all features and tools tailored to your role.
+                Ready to get started? Navigate through the sidebar to explore all features tailored to your role.
             </p>
         </div>
     """, unsafe_allow_html=True)
