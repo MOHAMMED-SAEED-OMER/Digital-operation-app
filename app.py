@@ -27,12 +27,11 @@ def main():
         # Logout button
         if st.sidebar.button("Log Out"):
             st.session_state["user_info"] = None
-            # Update query parameters to refresh the app state
             if hasattr(st, "set_query_params"):
                 st.set_query_params()  # Use the updated method
             else:
                 st.experimental_set_query_params()  # Fallback for older versions
-            st.experimental_rerun()
+            st.stop()
 
         # Sidebar navigation
         allowed_pages = st.session_state["user_info"]["allowed_pages"]
