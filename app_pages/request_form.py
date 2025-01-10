@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime
+import pandas as pd
 from utils.database import read_data, write_data, get_next_reference_id
 
 
@@ -27,7 +28,7 @@ def request_form_page():
             submission_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             # Create a new request with default values for missing fields
-            new_request = {
+            new_request = pd.DataFrame([{
                 "Reference ID": reference_id,
                 "Request Submission Date": submission_date,
                 "Requester Name": requester_name,
@@ -39,10 +40,10 @@ def request_form_page():
                 "Liquidated": 0.0,
                 "Returned": 0.0,
                 "Liquidated Invoices": None
-            }
+            }])
 
-            # Append new request to the data
-            updated_data = data.append(new_request, ignore_index=True)
+            # Append new request to the existing data
+            updated_data = pd.concat([data, new_request], ignore_index=True)
 
             # Write updated data back to the database
             write_data(updated_data)
