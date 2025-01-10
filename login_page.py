@@ -3,20 +3,14 @@ import pandas as pd
 
 def login_page():
     """
-    Login page for the application with a dynamic background and organization details.
+    Login page for the application.
     """
     # Apply custom styles for the login page
     st.markdown("""
         <style>
-            body {
-                background: linear-gradient(135deg, #f3f4f6, #e0e7ff);
-                font-family: 'Arial', sans-serif;
-                margin: 0;
-                padding: 0;
-            }
             .login-container {
                 text-align: center;
-                margin-top: 80px;
+                margin-top: 50px;
             }
             .login-header {
                 font-size: 32px;
@@ -28,13 +22,13 @@ def login_page():
             .login-subtitle {
                 font-size: 18px;
                 color: #444444;
-                margin-bottom: 40px;
+                margin-bottom: 30px;
             }
             .contact-info {
                 text-align: center;
                 font-size: 14px;
                 color: #666666;
-                margin-top: 40px;
+                margin-top: 30px;
             }
             .contact-info a {
                 color: #0056b3;
@@ -49,36 +43,10 @@ def login_page():
                 right: 20px;
             }
             .logo-container img {
-                width: 150px;
+                width: 150px; /* Adjust the logo size */
                 height: auto;
             }
-            .background {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-image: url('background-image.png'); /* Use your dynamic image */
-                background-size: cover;
-                background-position: center;
-                z-index: -1;
-            }
-            .overlay {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(255, 255, 255, 0.8); /* Light overlay for text readability */
-                z-index: -1;
-            }
         </style>
-    """, unsafe_allow_html=True)
-
-    # Add background image and overlay
-    st.markdown("""
-        <div class="background"></div>
-        <div class="overlay"></div>
     """, unsafe_allow_html=True)
 
     # Add the logo at the top-right
