@@ -24,13 +24,6 @@ def login_page():
                 color: #444444;
                 margin-bottom: 20px;
             }
-            .login-logo {
-                width: 60%;
-                margin: auto;
-                margin-bottom: 20px;
-                border-radius: 10px;
-                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            }
             .contact-info {
                 text-align: center;
                 font-size: 14px;
@@ -47,10 +40,12 @@ def login_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # Add the logo and titles
+    # Add the logo using st.image
+    st.image("hasar photo 2.jpeg", use_container_width=True, caption="Hasar Organization Logo")
+
+    # Add titles
     st.markdown("""
         <div class="login-container">
-            <img src="hasar photo 2.jpeg" class="login-logo" />
             <div class="login-header">Hasar Organization for Climate Action</div>
             <div class="login-subtitle">Electronic Financing and Procurement System</div>
         </div>
