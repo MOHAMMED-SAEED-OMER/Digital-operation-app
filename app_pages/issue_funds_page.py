@@ -21,7 +21,7 @@ def issue_funds_page():
         return
 
     # Filter approved requests with no finance status (i.e., pending issuance)
-    approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isnull())]
+   approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isnull())]
 
     # Debugging: Display the filtered data
     if st.checkbox("Show filtered approved requests for debugging"):
