@@ -72,4 +72,4 @@ def issue_funds_page():
         # Clear the flag to avoid infinite reloads
         st.session_state["refresh_page"] = False
         # Redirect to the same page
-        st.experimental_set_query_params()
+        st.set_query_params()  # Replaced `st.experimental_set_query_params`
