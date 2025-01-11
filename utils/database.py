@@ -48,22 +48,20 @@ def read_data():
             "Liquidated Invoices"
         ])
 
-def write_data(data):
+def write_data(existing_data, new_request=None):
     """
-    Save the updated DataFrame to the database.
+    Save the database. If a new_request is provided, it appends it to the data.
+    Otherwise, overwrites the database with the existing_data.
     """
     with FileLock(LOCK_FILE):
-        data.to_csv(DATABASE_FILE, index=False)
-
-def get_next_reference_id(data):
-    """
-    Generate the next unique reference ID based on the existing data.
-    """
-    if data.empty:
-        return "REQ-001"
-    else:
-        max_id = int(data["Reference ID"].str.split("-").str[1].max())
-        return f"REQ-{max_id + 1:03}"
+        if new_request is not None:
+            # Append the new request to the existing data
+            new_data = pd.DataFrame([new_request])
+            updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+            updated_data.to_csv(DATABASE_FILE, index=False)
+        else:
+            # Overwrite the entire data with existing_data
+            existing_data.to_csv(DATABASE_FILE, index=False)
 
 def update_request_status(reference_id, status):
     """
