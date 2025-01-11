@@ -40,7 +40,7 @@ def managers_view_page():
                         if update_request_status(row['Reference ID'], "Approved"):
                             st.success(f"✅ Request {row['Reference ID']} has been approved.")
                             st.session_state["refresh_key"] = st.session_state.get("refresh_key", 0) + 1  # Increment refresh key
-                            st.experimental_set_query_params(refresh=str(st.session_state["refresh_key"]))
+                            st.set_query_params(refresh=str(st.session_state["refresh_key"]))
                             st.stop()  # Stops execution to ensure updated view
                         else:
                             st.error("❌ Failed to update the request status.")
@@ -49,7 +49,7 @@ def managers_view_page():
                         if update_request_status(row['Reference ID'], "Declined"):
                             st.warning(f"⚠️ Request {row['Reference ID']} has been declined.")
                             st.session_state["refresh_key"] = st.session_state.get("refresh_key", 0) + 1
-                            st.experimental_set_query_params(refresh=str(st.session_state["refresh_key"]))
+                            st.set_query_params(refresh=str(st.session_state["refresh_key"]))
                             st.stop()
                         else:
                             st.error("❌ Failed to update the request status.")
