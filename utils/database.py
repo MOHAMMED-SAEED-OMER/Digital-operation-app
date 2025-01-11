@@ -63,6 +63,16 @@ def write_data(existing_data, new_request=None):
             # Overwrite the entire data with existing_data
             existing_data.to_csv(DATABASE_FILE, index=False)
 
+def get_next_reference_id(data):
+    """
+    Generate the next unique reference ID based on the existing data.
+    """
+    if data.empty:
+        return "REQ-001"
+    else:
+        max_id = data["Reference ID"].str.split("-").str[1].astype(int).max()
+        return f"REQ-{max_id + 1:03}"
+
 def update_request_status(reference_id, status):
     """
     Update the status of a specific request in the database.
