@@ -1,50 +1,126 @@
-import streamlit as st
+import pandas as pd
+import osimport pandas as pd
+import os
+from filelock import FileLock
 
-def apply_design():
-    st.markdown("""
-        <style>
-            /* Sidebar styling */
-            .css-1d391kg {
-                background-color: #2e7d32;
-                color: white;
-            }
+DATABASE_FILE = "database.csv"
+LOCK_FILE = DATABASE_FILE + ".lock"
 
-            /* Sticky navigation bar at the top */
-            .css-18e3th9 {
-                position: sticky;
-                top: 0;
-                z-index: 100;
-                background-color: #2e7d32;
-                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            }
+def get_next_reference_id(data):
+    """
+    Generate the next unique reference ID based on the existing data.
+    """
+    if data.empty:
+        return "REQ-001"
+    else:
+        max_id = int(data["Reference ID"].str.split("-").str[1].max())
+        return f"REQ-{max_id + 1:03}"
 
-            /* Make headings more prominent */
-            h1, h2, h3, h4, h5, h6 {
-                font-family: Arial, sans-serif;
-            }
+def initialize_database():
+    """
+    Initialize the database with required columns if it does not exist.
+    """
+    if not os.path.exists(DATABASE_FILE):
+        columns = [
+            "Reference ID",
+            "Request Submission Date",
+            "Requester Name",
+            "Request Purpose",
+            "Amount Requested",
+            "Status",  # Approval status (Pending, Approved, Declined)
+            "Finance Status",  # Finance status (Pending, Issued)
+            "Issue Date",  # Date when money was issued
+            "Liquidated",  # Amount spent (liquidated)
+            "Returned",  # Amount returned (remaining)
+            "Liquidated Invoices"  # Attached invoices (file paths or links)
+        ]
+        pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
 
-            /* Buttons */
-            button {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                text-align: center;
-                font-size: 16px;
-                cursor: pointer;
-                border-radius: 5px;
-            }
 
-            button:hover {
-                background-color: #45a049;
-            }
+def read_data():
+    """
+    Read the database into a Pandas DataFrame.
+    """
+    if os.path.exists(DATABASE_FILE):
+        return pd.read_csv(DATABASE_FILE)
+    else:
+        return pd.DataFrame(columns=[
+            "Reference ID",
+            "Request Submission Date",
+            "Requester Name",
+            "Request Purpose",
+            "Amount Requested",
+            "Status",
+            "Finance Status",
+            "Issue Date",
+            "Liquidated",
+            "Returned",
+            "Liquidated Invoices"
+        ])
 
-            /* Footer or additional content */
-            .footer {
-                text-align: center;
-                margin-top: 20px;
-                color: #666;
-                font-size: 14px;
-            }
-        </style>
-    """, unsafe_allow_html=True)
+def write_data(existing_data, new_request):
+    """
+    Add a new request to the existing data and save to the database.
+    """
+    # Convert new_request to a DataFrame
+    new_data = pd.DataFrame([new_request])
+
+    # Concatenate new data with the existing data
+    updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+
+    # Save the updated data to the database file
+    with FileLock(LOCK_FILE):
+        updated_data.to_csv(DATABASE_FILE, index=False)
+
+def update_request_status(reference_id, status):
+    """
+    Update the status of a specific request in the database.
+    """
+    data = read_data()
+    if reference_id in data["Reference ID"].values:
+        data.loc[data["Reference ID"] == reference_id, "Status"] = status
+        with FileLock(LOCK_FILE):
+            data.to_csv(DATABASE_FILE, index=False)
+        return True
+    return False
+
+def update_finance_status(reference_id, finance_status, issue_date=None):
+    """
+    Update the finance status and issue date for a specific request.
+    """
+    data = read_data()
+    if reference_id in data["Reference ID"].values:
+        data.loc[data["Reference ID"] == reference_id, ["Finance Status", "Issue Date"]] = [finance_status, issue_date]
+        with FileLock(LOCK_FILE):
+            data.to_csv(DATABASE_FILE, index=False)
+        return True
+    return False
+
+def update_liquidation_details(reference_id, liquidated, returned, invoices):
+    """
+    Update the liquidation details for a specific request.
+    """
+    data = read_data()
+    if reference_id in data["Reference ID"].values:
+        data.loc[data["Reference ID"] == reference_id, ["Liquidated", "Returned", "Liquidated Invoices"]] = [
+            liquidated, returned, invoices
+        ]
+        with FileLock(LOCK_FILE):
+            data.to_csv(DATABASE_FILE, index=False)
+        return True
+    return False
+
+def edit_request(reference_id, updated_request):
+    """
+    Edit the details of a specific request in the database.
+    """
+    data = read_data()
+    if reference_id in data["Reference ID"].values:
+        for key, value in updated_request.items():
+            if key in data.columns:
+                data.loc[data["Reference ID"] == reference_id, key] = value
+        with FileLock(LOCK_FILE):
+            data.to_csv(DATABASE_FILE, index=False)
+        return True
+    return False
+
