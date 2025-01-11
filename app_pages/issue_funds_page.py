@@ -77,3 +77,4 @@ def issue_funds_page():
                 st.session_state["reload_key"] = st.session_state.get("reload_key", 0) + 1  # Trigger a page reload
 
             st.markdown("</div>", unsafe_allow_html=True)
+
