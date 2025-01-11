@@ -19,42 +19,6 @@ def issue_funds_page():
             font-size: 1.2rem;
             margin-bottom: 1.5rem;
         }
-        .styled-table {
-            margin: auto;
-            border-collapse: collapse;
-            width: 90%;
-            background-color: #f9f9f9;
-        }
-        .styled-table th {
-            background-color: #117A65;
-            color: white;
-            text-align: left;
-            padding: 8px;
-        }
-        .styled-table td {
-            padding: 8px;
-        }
-        .styled-table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .styled-table tr:hover {
-            background-color: #ddd;
-        }
-        .issue-button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin: 10px auto;
-            display: block;
-            width: 50%;
-            text-align: center;
-        }
-        .issue-button:hover {
-            background-color: #218838;
-        }
         .no-requests {
             text-align: center;
             font-size: 1.2rem;
@@ -69,8 +33,18 @@ def issue_funds_page():
     # Load data
     data = read_data()
 
+    # Debugging: Display the database to confirm what data is being loaded
+    st.write("**Database Debug View:**", data)
+
     # Filter approved requests that have not been issued
+    if "Status" not in data.columns or "Finance Status" not in data.columns:
+        st.error("The required columns ('Status' and 'Finance Status') are missing from the database.")
+        return
+
     pending_issue_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isna())]
+
+    # Debugging: Display the filtered data
+    st.write("**Filtered Pending Requests:**", pending_issue_requests)
 
     if pending_issue_requests.empty:
         # Display a friendly message when no requests are pending
