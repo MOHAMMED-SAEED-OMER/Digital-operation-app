@@ -63,3 +63,14 @@ def get_next_reference_id(data):
     else:
         max_id = int(data["Reference ID"].str.split("-").str[1].max())
         return f"REQ-{max_id + 1:03}"
+
+def update_finance_status(reference_id, finance_status, issue_date=None):
+    """
+    Update the finance status and issue date for a specific request.
+    """
+    data = read_data()  # Load the database
+    if reference_id in data["Reference ID"].values:
+        data.loc[data["Reference ID"] == reference_id, ["Finance Status", "Issue Date"]] = [finance_status, issue_date]
+        write_data(data)  # Save the updated database
+        return True  # Success
+    return False  # Failure
