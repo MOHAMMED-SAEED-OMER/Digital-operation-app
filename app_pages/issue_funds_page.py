@@ -33,9 +33,6 @@ def issue_funds_page():
     # Load data
     data = read_data()
 
-    # Debug: Display all data to verify its structure (optional)
-    # st.write("Full Database", data)
-
     # Ensure required columns are present
     if "Status" not in data.columns or "Finance Status" not in data.columns:
         st.error("The database is missing required columns ('Status' or 'Finance Status').")
@@ -48,12 +45,10 @@ def issue_funds_page():
     ]
 
     if pending_issue_requests.empty:
-        # Show a friendly message if no requests are pending issuance
         st.markdown("<div class='no-requests'>🎉 All approved requests have been issued!</div>", unsafe_allow_html=True)
     else:
-        # Iterate through each pending request and display details
         for i, row in pending_issue_requests.iterrows():
-            st.markdown("<hr>", unsafe_allow_html=True)  # Separator
+            st.markdown("<hr>", unsafe_allow_html=True)
             st.markdown(f"""
                 <h4 style='color: #117A65;'>Request Details</h4>
                 <ul style='list-style-type: none; padding: 0;'>
@@ -64,11 +59,14 @@ def issue_funds_page():
                 </ul>
             """, unsafe_allow_html=True)
 
-            # "Issue Money" button for each request
+            # "Issue Money" button
             if st.button(f"Issue Money for {row['Reference ID']}", key=f"issue_{row['Reference ID']}"):
                 issue_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 if update_finance_status(row["Reference ID"], "Issued", issue_date):
                     st.success(f"Funds for Request ID {row['Reference ID']} were successfully issued on {issue_date}.")
                 else:
                     st.error("Failed to issue funds. Please try again.")
-                st.experimental_rerun()  # Reload the page to reflect changes
+
+                # Refresh the page using query parameters
+                st.set_query_params(reload=str(datetime.now()))
+                return  # Stop further execution to reflect changes
