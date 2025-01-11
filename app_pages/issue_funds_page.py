@@ -11,19 +11,27 @@ def issue_funds_page():
     # Load data from the database
     data = read_data()
 
+    # Debugging: Display the current database for troubleshooting
+    if st.checkbox("Show raw database for debugging"):
+        st.dataframe(data)
+
     # Ensure required columns exist
     if "Status" not in data.columns or "Finance Status" not in data.columns:
         st.error("The database is missing required columns: 'Status' or 'Finance Status'.")
         return
 
     # Filter approved requests with no finance status (i.e., pending issuance)
-    approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isna())]
+    approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isnull())]
+
+    # Debugging: Display the filtered data
+    if st.checkbox("Show filtered approved requests for debugging"):
+        st.dataframe(approved_requests)
 
     if approved_requests.empty:
         st.info("No approved requests to issue at the moment.")
     else:
         st.markdown("### Approved Requests Pending Issuance")
-        for i, row in approved_requests.iterrows():
+        for _, row in approved_requests.iterrows():
             # Display each request in a styled container
             st.markdown(f"""
             <div style='border: 1px solid #ddd; padding: 15px; border-radius: 5px; margin-bottom: 15px; background-color: #f9f9f9;'>
@@ -47,7 +55,5 @@ def issue_funds_page():
                     st.error(f"Failed to issue money for Request ID {row['Reference ID']}. Please try again.")
 
                 # Mimic a page refresh to update the display
-                st.session_state["reload_key"] = st.session_state.get("reload_key", 0) + 1
-                st.experimental_set_query_params(reload=str(datetime.now()))  # Mimic page refresh
+                st.experimental_set_query_params(reload=str(datetime.now()))
                 st.stop()  # Stop script to reload
-
