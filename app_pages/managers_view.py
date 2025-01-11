@@ -1,21 +1,51 @@
-import pandas as pd
-import os
-from filelock import FileLock
+import streamlit as st
+from utils.database import read_data, write_data
 
-DATABASE_FILE = "database.csv"
-LOCK_FILE = DATABASE_FILE + ".lock"
+def managers_view_page():
+    st.title("Manager's View")
+    st.write("Review and manage pending requests.")
 
-def write_data(existing_data, new_request=None):
-    """
-    Save the database. If a new_request is provided, it appends it to the data.
-    Otherwise, overwrites the database with the existing_data.
-    """
-    with FileLock(LOCK_FILE):
-        if new_request is not None:
-            # Append the new request to the existing data
-            new_data = pd.DataFrame([new_request])
-            updated_data = pd.concat([existing_data, new_data], ignore_index=True)
-            updated_data.to_csv(DATABASE_FILE, index=False)
-        else:
-            # Overwrite the entire data with existing_data
-            existing_data.to_csv(DATABASE_FILE, index=False)
+    # Load data
+    data = read_data()
+
+    # Check if required columns exist
+    if "Status" not in data.columns:
+        st.error("The database is missing the 'Status' column.")
+        return
+
+    # Filter pending requests
+    pending_requests = data[data["Status"] == "Pending"]
+
+    if pending_requests.empty:
+        st.info("No pending requests at the moment.")
+    else:
+        st.subheader("Pending Requests")
+        for i, row in pending_requests.iterrows():
+            with st.container():
+                st.markdown(f"""
+                **Request ID:** {row['Reference ID']}  
+                **Requester Name:** {row['Requester Name']}  
+                **Request Purpose:** {row['Request Purpose']}  
+                **Amount Requested:** ${row['Amount Requested']:.2f}  
+                """)
+
+                # Approve/Decline buttons
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button(f"Approve {row['Reference ID']}", key=f"approve_{row['Reference ID']}"):
+                        data.loc[i, "Status"] = "Approved"
+                        write_data(data)  # Save the updated data
+                        st.success(f"Request {row['Reference ID']} has been approved.")
+                        st.experimental_rerun()
+
+                with col2:
+                    if st.button(f"Decline {row['Reference ID']}", key=f"decline_{row['Reference ID']}"):
+                        data.loc[i, "Status"] = "Declined"
+                        write_data(data)  # Save the updated data
+                        st.warning(f"Request {row['Reference ID']} has been declined.")
+                        st.experimental_rerun()
+
+        # Debugging: Show updated database
+        if st.checkbox("Show database (debugging)"):
+            st.dataframe(data)
+
