@@ -7,7 +7,7 @@ LOCK_FILE = DATABASE_FILE + ".lock"
 
 def initialize_database():
     """
-    Initialize the database with the required columns if it does not exist.
+    Initialize the database with required columns if it does not exist.
     """
     if not os.path.exists(DATABASE_FILE):
         columns = [
@@ -16,12 +16,12 @@ def initialize_database():
             "Requester Name",
             "Request Purpose",
             "Amount Requested",
-            "Status",  # Pending, Approved, Declined
-            "Finance Status",  # Pending, Issued
-            "Issue Date",
-            "Liquidated",
-            "Returned",
-            "Liquidated Invoices",
+            "Status",  # Approval status (Pending, Approved, Declined)
+            "Finance Status",  # Finance status (Pending, Issued)
+            "Issue Date",  # Date when money was issued
+            "Liquidated",  # Amount spent (liquidated)
+            "Returned",  # Amount returned (remaining)
+            "Liquidated Invoices"  # Attached invoices (file paths or links)
         ]
         pd.DataFrame(columns=columns).to_csv(DATABASE_FILE, index=False)
 
@@ -33,7 +33,19 @@ def read_data():
         return pd.read_csv(DATABASE_FILE)
     else:
         initialize_database()
-        return pd.DataFrame()
+        return pd.DataFrame(columns=[
+            "Reference ID",
+            "Request Submission Date",
+            "Requester Name",
+            "Request Purpose",
+            "Amount Requested",
+            "Status",
+            "Finance Status",
+            "Issue Date",
+            "Liquidated",
+            "Returned",
+            "Liquidated Invoices"
+        ])
 
 def write_data(data):
     """
@@ -41,3 +53,13 @@ def write_data(data):
     """
     with FileLock(LOCK_FILE):
         data.to_csv(DATABASE_FILE, index=False)
+
+def get_next_reference_id(data):
+    """
+    Generate the next unique reference ID based on the existing data.
+    """
+    if data.empty:
+        return "REQ-001"
+    else:
+        max_id = data["Reference ID"].str.extract(r'(\d+)$').astype(int).max()[0]
+        return f"REQ-{max_id + 1:03}"
