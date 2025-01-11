@@ -67,6 +67,6 @@ def issue_funds_page():
                 else:
                     st.error("Failed to issue funds. Please try again.")
 
-                # Refresh the page using query parameters
-                st.set_query_params(reload=str(datetime.now()))
-                return  # Stop further execution to reflect changes
+                # Mimic a refresh by updating a session state value
+                st.session_state["refresh_key"] = st.session_state.get("refresh_key", 0) + 1
+                st.experimental_rerun()  # This line triggers a rerun on supported versions
