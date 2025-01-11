@@ -41,5 +41,8 @@ def issue_funds_page():
                 update_finance_status(row["Reference ID"], "Issued", issue_date)
                 st.success(f"Money issued for Request ID {row['Reference ID']} on {issue_date}.")
 
-                # Refresh the page
-                st.experimental_rerun()
+                # Clear Streamlit's session state to mimic a page reload
+                for key in list(st.session_state.keys()):
+                    del st.session_state[key]
+                st.experimental_set_query_params()  # Clear query parameters
+                st.stop()  # End script execution and refresh page
