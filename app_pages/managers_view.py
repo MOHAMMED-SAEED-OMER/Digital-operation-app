@@ -1,78 +1,54 @@
 import streamlit as st
-from datetime import datetime  # Import datetime
-from utils.database import read_data, update_request_status
+from utils.database import read_data, write_data
 
 def managers_view_page():
-    # Header with modern styling
-    st.markdown("""
-        <style>
-        .page-header {
-            text-align: center;
-            color: #2E86C1;
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-        .page-subheader {
-            text-align: center;
-            color: #566573;
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-        }
-        </style>
-        <div class="page-header">Manager's View</div>
-        <div class="page-subheader">Review and manage pending requests efficiently</div>
-    """, unsafe_allow_html=True)
+    # Page Header
+    st.markdown("<h2 style='text-align: center;'>Manager's View</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>Review and manage pending requests.</p>", unsafe_allow_html=True)
+    st.markdown("---")
 
     # Load data
     data = read_data()
+
+    # Ensure required columns exist
+    if "Status" not in data.columns:
+        st.error("The database is missing the 'Status' column.")
+        return
 
     # Filter pending requests
     pending_requests = data[data["Status"] == "Pending"]
 
     if pending_requests.empty:
-        st.markdown("<div style='text-align: center; font-size: 1.2rem; color: #27AE60;'>🎉 All requests have been reviewed!</div>", unsafe_allow_html=True)
+        st.info("No pending requests at the moment.")
     else:
-        # Display pending requests
-        st.dataframe(pending_requests)
+        st.markdown("### Pending Requests")
+        for i, row in pending_requests.iterrows():
+            with st.container():
+                # Display the request details
+                st.markdown(f"""
+                <div style='border: 1px solid #ddd; padding: 15px; border-radius: 5px; margin-bottom: 15px; background-color: #f9f9f9;'>
+                    <p><strong>Request ID:</strong> {row['Reference ID']}</p>
+                    <p><strong>Requester Name:</strong> {row['Requester Name']}</p>
+                    <p><strong>Request Purpose:</strong> {row['Request Purpose']}</p>
+                    <p><strong>Amount Requested:</strong> ${row['Amount Requested']:.2f}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
-        # Select a request to review
-        selected_request = st.selectbox(
-            "Select a request to review:",
-            pending_requests["Reference ID"].values
-        )
+                # Approve and Decline buttons
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button(f"Approve {row['Reference ID']}", key=f"approve_{row['Reference ID']}"):
+                        data.loc[i, "Status"] = "Approved"
+                        write_data(data)  # Save changes to the database
+                        st.success(f"Request {row['Reference ID']} has been approved.")
+                        st.stop()  # Stop execution to refresh the page
+                with col2:
+                    if st.button(f"Decline {row['Reference ID']}", key=f"decline_{row['Reference ID']}"):
+                        data.loc[i, "Status"] = "Declined"
+                        write_data(data)  # Save changes to the database
+                        st.warning(f"Request {row['Reference ID']} has been declined.")
+                        st.stop()  # Stop execution to refresh the page
 
-        if selected_request:
-            # Show request details
-            request_details = pending_requests[pending_requests["Reference ID"] == selected_request].iloc[0]
-            st.markdown("<hr>", unsafe_allow_html=True)
-            st.markdown(f"""
-                <h4 style='color: #2E86C1;'>Request Details</h4>
-                <ul style='list-style-type: none; padding: 0;'>
-                    <li><strong>Requester Name:</strong> {request_details['Requester Name']}</li>
-                    <li><strong>Purpose:</strong> {request_details['Request Purpose']}</li>
-                    <li><strong>Amount Requested:</strong> ${request_details['Amount Requested']:.2f}</li>
-                    <li><strong>Submission Date:</strong> {request_details['Request Submission Date']}</li>
-                </ul>
-            """, unsafe_allow_html=True)
-
-            # Approve/Decline buttons
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("✅ Approve Request", key=f"approve_{selected_request}"):
-                    success = update_request_status(selected_request, "Approved")
-                    if success:
-                        st.success(f"Request {selected_request} has been approved.")
-                        st.experimental_set_query_params(refresh=str(datetime.now()))  # Force refresh
-                        st.stop()
-                    else:
-                        st.error("Failed to approve the request. Please try again.")
-            with col2:
-                if st.button("❌ Decline Request", key=f"decline_{selected_request}"):
-                    success = update_request_status(selected_request, "Declined")
-                    if success:
-                        st.warning(f"Request {selected_request} has been declined.")
-                        st.experimental_set_query_params(refresh=str(datetime.now()))  # Force refresh
-                        st.stop()
-                    else:
-                        st.error("Failed to decline the request. Please try again.")
+        # Optional: Debugging - Show updated database
+        if st.checkbox("Show updated database for debugging"):
+            st.dataframe(data)
