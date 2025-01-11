@@ -10,13 +10,16 @@ def issue_funds_page():
     # Load data from the database
     data = read_data()
 
-    # Check if required columns exist
+    # Ensure required columns exist and fill missing columns with default values
     if "Status" not in data.columns or "Finance Status" not in data.columns:
         st.error("The database is missing required columns: 'Status' or 'Finance Status'.")
         return
 
+    # Ensure Finance Status is properly filled
+    data["Finance Status"] = data["Finance Status"].fillna("Pending")
+
     # Filter approved requests with no finance status (i.e., pending issuance)
-    approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isna())]
+    approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"] == "Pending")]
 
     if approved_requests.empty:
         st.info("No approved requests to issue at the moment.")
@@ -38,5 +41,5 @@ def issue_funds_page():
                 update_finance_status(row["Reference ID"], "Issued", issue_date)
                 st.success(f"Money issued for Request ID {row['Reference ID']} on {issue_date}.")
 
-                # Simulate a refresh
+                # Refresh the page
                 st.experimental_rerun()
