@@ -2,13 +2,8 @@ import streamlit as st
 from utils.database import read_data, update_request_status
 
 def managers_view_page():
-    # Page Title with Centered Styling
-    st.markdown("""
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #2E8B57; font-family: Arial, sans-serif;">Manager's View</h2>
-            <p style="color: #555; font-size: 16px;">Approve or Decline Pending Requests</p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.title("Manager's View")
+    st.subheader("Approve or Decline Pending Requests")
 
     # Load data
     data = read_data()
@@ -17,39 +12,50 @@ def managers_view_page():
     pending_requests = data[data["Status"] == "Pending"]
 
     if pending_requests.empty:
-        # Informative Message
-        st.info("🎉 No pending requests at the moment. All caught up!")
+        st.info("No pending requests.")
     else:
-        # Display pending requests in a styled container
+        # Display pending requests
         st.markdown("### Pending Requests")
-        for index, row in pending_requests.iterrows():
-            with st.container():
-                st.markdown(f"""
-                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px; margin-bottom: 15px; background-color: #f9f9f9;">
-                    <p><strong>Request ID:</strong> {row['Reference ID']}</p>
-                    <p><strong>Requester Name:</strong> {row['Requester Name']}</p>
-                    <p><strong>Purpose:</strong> {row['Request Purpose']}</p>
-                    <p><strong>Amount:</strong> ${row['Amount Requested']:.2f}</p>
-                </div>
-                """, unsafe_allow_html=True)
+        st.dataframe(pending_requests)
 
-                # Approve and Decline Buttons
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button("Approve", key=f"approve_{row['Reference ID']}"):
-                        if update_request_status(row['Reference ID'], "Approved"):
-                            st.success(f"✅ Request {row['Reference ID']} has been approved.")
-                            st.session_state["refresh_key"] = st.session_state.get("refresh_key", 0) + 1  # Increment refresh key
-                            st.set_query_params(refresh=str(st.session_state["refresh_key"]))
-                            st.stop()  # Stops execution to ensure updated view
-                        else:
-                            st.error("❌ Failed to update the request status.")
-                with col2:
-                    if st.button("Decline", key=f"decline_{row['Reference ID']}"):
-                        if update_request_status(row['Reference ID'], "Declined"):
-                            st.warning(f"⚠️ Request {row['Reference ID']} has been declined.")
-                            st.session_state["refresh_key"] = st.session_state.get("refresh_key", 0) + 1
-                            st.set_query_params(refresh=str(st.session_state["refresh_key"]))
-                            st.stop()
-                        else:
-                            st.error("❌ Failed to update the request status.")
+        # Select a request to approve/decline
+        selected_request = st.selectbox(
+            "Select a Request to Review:",
+            pending_requests["Reference ID"].values
+        )
+
+        # Approve and Decline buttons
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Approve"):
+                if update_request_status(selected_request, "Approved"):
+                    st.success(f"Request {selected_request} has been approved.")
+                    # Refresh the page to update the display
+                    refresh_page()
+                else:
+                    st.error("Failed to update the request status.")
+        with col2:
+            if st.button("Decline"):
+                if update_request_status(selected_request, "Declined"):
+                    st.warning(f"Request {selected_request} has been declined.")
+                    # Refresh the page to update the display
+                    refresh_page()
+                else:
+                    st.error("Failed to update the request status.")
+
+
+def refresh_page():
+    """
+    Refresh the page to update the display.
+    Handles compatibility with different Streamlit versions.
+    """
+    if "refresh_key" not in st.session_state:
+        st.session_state["refresh_key"] = 0
+
+    st.session_state["refresh_key"] += 1  # Increment refresh key
+    try:
+        # Use the latest Streamlit's query_params functionality if available
+        st.set_query_params(refresh=str(st.session_state["refresh_key"]))
+    except AttributeError:
+        # Fallback for older Streamlit versions
+        st.experimental_rerun()
