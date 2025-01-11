@@ -27,7 +27,9 @@ def request_form_page():
             amount_requested = st.number_input(
                 "Amount Requested",
                 min_value=0.0,
+                step=0.01,
                 format="%.2f",
+                placeholder="Enter amount in USD",
                 help="Specify the amount you need."
             )
 
@@ -67,7 +69,7 @@ def request_form_page():
                 "Request Purpose": request_purpose,
                 "Amount Requested": amount_requested,
                 "Status": "Pending",  # Default status
-                "Finance Status": "Pending",  # Default finance status
+                "Finance Status": None,  # Default finance status
                 "Issue Date": None,
                 "Liquidated": 0.0,
                 "Returned": 0.0,
