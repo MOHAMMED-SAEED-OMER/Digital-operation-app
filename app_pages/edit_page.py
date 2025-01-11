@@ -1,5 +1,6 @@
 import streamlit as st
 from utils.database import read_data, edit_request
+import pandas as pd  # For handling NaN values
 
 def edit_page():
     st.title("Edit Database")
@@ -19,6 +20,11 @@ def edit_page():
         # Get the selected request
         selected_request = data[data["Reference ID"] == reference_id].iloc[0]
 
+        # Handle NaN for "Finance Status"
+        finance_status = selected_request.get("Finance Status", "Pending")
+        if pd.isna(finance_status):  # Check if Finance Status is NaN
+            finance_status = "Pending"  # Default to "Pending" if NaN
+
         # Display editable fields
         requester_name = st.text_input("Requester Name", selected_request["Requester Name"])
         request_purpose = st.text_area("Request Purpose", selected_request["Request Purpose"])
@@ -26,7 +32,8 @@ def edit_page():
             "Amount Requested", min_value=0.0, value=float(selected_request["Amount Requested"]), format="%.2f"
         )
         finance_status = st.selectbox(
-            "Finance Status", ["Pending", "Issued", "Liquidated"], index=["Pending", "Issued", "Liquidated"].index(selected_request["Finance Status"])
+            "Finance Status", ["Pending", "Issued", "Liquidated"], 
+            index=["Pending", "Issued", "Liquidated"].index(finance_status)
         )
         liquidated = st.number_input(
             "Amount Liquidated", min_value=0.0, value=float(selected_request.get("Liquidated", 0.0)), format="%.2f"
