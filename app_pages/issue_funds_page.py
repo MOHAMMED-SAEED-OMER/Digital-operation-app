@@ -20,8 +20,9 @@ def issue_funds_page():
         st.error("The database is missing required columns: 'Status' or 'Finance Status'.")
         return
 
-    # Filter approved requests with no finance status (i.e., pending issuance)
-    approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isnull())]
+    # Correctly filter approved requests
+    # Approved requests must have `Status == "Approved"` and `Finance Status` must be empty or NaN
+    approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isna() | (data["Finance Status"] == ""))]
 
     # Debugging: Display the filtered data
     if st.checkbox("Show filtered approved requests for debugging"):
