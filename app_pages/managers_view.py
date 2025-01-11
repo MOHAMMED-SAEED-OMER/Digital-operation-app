@@ -1,51 +1,35 @@
 import streamlit as st
-from utils.database import read_data, write_data
+from utils.database import read_data, update_request_status
 
 def managers_view_page():
     st.title("Manager's View")
-    st.write("Review and manage pending requests.")
+    st.subheader("Approve or Decline Pending Requests")
 
     # Load data
     data = read_data()
-
-    # Check if required columns exist
-    if "Status" not in data.columns:
-        st.error("The database is missing the 'Status' column.")
-        return
 
     # Filter pending requests
     pending_requests = data[data["Status"] == "Pending"]
 
     if pending_requests.empty:
-        st.info("No pending requests at the moment.")
+        st.info("No pending requests.")
     else:
-        st.subheader("Pending Requests")
-        for i, row in pending_requests.iterrows():
-            with st.container():
-                st.markdown(f"""
-                **Request ID:** {row['Reference ID']}  
-                **Requester Name:** {row['Requester Name']}  
-                **Request Purpose:** {row['Request Purpose']}  
-                **Amount Requested:** ${row['Amount Requested']:.2f}  
-                """)
+        # Display pending requests
+        st.dataframe(pending_requests)
 
-                # Approve/Decline buttons
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button(f"Approve {row['Reference ID']}", key=f"approve_{row['Reference ID']}"):
-                        data.loc[i, "Status"] = "Approved"
-                        write_data(data)  # Save the updated data
-                        st.success(f"Request {row['Reference ID']} has been approved.")
-                        st.experimental_rerun()
+        # Select a request to approve/decline
+        selected_request = st.selectbox(
+            "Select a Request to Review:",
+            pending_requests["Reference ID"].values
+        )
 
-                with col2:
-                    if st.button(f"Decline {row['Reference ID']}", key=f"decline_{row['Reference ID']}"):
-                        data.loc[i, "Status"] = "Declined"
-                        write_data(data)  # Save the updated data
-                        st.warning(f"Request {row['Reference ID']} has been declined.")
-                        st.experimental_rerun()
-
-        # Debugging: Show updated database
-        if st.checkbox("Show database (debugging)"):
-            st.dataframe(data)
-
+        if st.button("Approve"):
+            if update_request_status(selected_request, "Approved"):
+                st.success(f"Request {selected_request} has been approved.")
+            else:
+                st.error("Failed to update the request status.")
+        elif st.button("Decline"):
+            if update_request_status(selected_request, "Declined"):
+                st.warning(f"Request {selected_request} has been declined.")
+            else:
+                st.error("Failed to update the request status.")
