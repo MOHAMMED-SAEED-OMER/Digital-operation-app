@@ -30,32 +30,20 @@ def managers_view_page():
             if st.button("Approve"):
                 if update_request_status(selected_request, "Approved"):
                     st.success(f"Request {selected_request} has been approved.")
-                    # Refresh the page to update the display
-                    refresh_page()
+                    # Trigger a refresh by updating session state
+                    st.session_state["refresh"] = True
                 else:
                     st.error("Failed to update the request status.")
         with col2:
             if st.button("Decline"):
                 if update_request_status(selected_request, "Declined"):
                     st.warning(f"Request {selected_request} has been declined.")
-                    # Refresh the page to update the display
-                    refresh_page()
+                    # Trigger a refresh by updating session state
+                    st.session_state["refresh"] = True
                 else:
                     st.error("Failed to update the request status.")
 
-
-def refresh_page():
-    """
-    Refresh the page to update the display.
-    Handles compatibility with different Streamlit versions.
-    """
-    if "refresh_key" not in st.session_state:
-        st.session_state["refresh_key"] = 0
-
-    st.session_state["refresh_key"] += 1  # Increment refresh key
-    try:
-        # Use the latest Streamlit's query_params functionality if available
-        st.set_query_params(refresh=str(st.session_state["refresh_key"]))
-    except AttributeError:
-        # Fallback for older Streamlit versions
-        st.experimental_rerun()
+        # Check if refresh is triggered
+        if "refresh" in st.session_state and st.session_state["refresh"]:
+            st.session_state["refresh"] = False
+            st.experimental_rerun()  # Ensures the page reloads to show updated data
