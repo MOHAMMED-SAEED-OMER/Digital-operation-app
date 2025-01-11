@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime
+import pandas as pd
 from utils.database import read_data, update_finance_status
 
 def issue_funds_page():
@@ -10,8 +11,20 @@ def issue_funds_page():
     # Load data
     data = read_data()
 
+    # Debugging: Display data (comment out in production)
+    st.write("### Raw Database Data")
+    st.dataframe(data)
+
     # Filter approved requests that have not been issued
+    if "Status" not in data.columns or "Finance Status" not in data.columns:
+        st.error("The database is missing required columns: 'Status' or 'Finance Status'.")
+        return
+
     pending_issue_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isna())]
+
+    # Debugging: Display filtered data (comment out in production)
+    st.write("### Filtered Approved Requests Pending Issue")
+    st.dataframe(pending_issue_requests)
 
     if pending_issue_requests.empty:
         st.info("No approved requests to issue at the moment.")
