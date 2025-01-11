@@ -46,12 +46,22 @@ def read_data():
             "Liquidated Invoices"
         ])
 
-def write_data(updated_data):
+def write_data(data):
     """
     Write the updated DataFrame to the database.
     """
     with FileLock(LOCK_FILE):
-        updated_data.to_csv(DATABASE_FILE, index=False)
+        data.to_csv(DATABASE_FILE, index=False)
+
+def get_next_reference_id(data):
+    """
+    Generate the next unique reference ID based on the existing data.
+    """
+    if data.empty or "Reference ID" not in data.columns:
+        return "REQ-001"
+    else:
+        max_id = data["Reference ID"].str.extract(r'(\d+)$').astype(int).max().values[0]
+        return f"REQ-{max_id + 1:03}"
 
 def update_request_status(reference_id, status):
     """
@@ -71,6 +81,32 @@ def update_finance_status(reference_id, finance_status, issue_date=None):
     data = read_data()
     if reference_id in data["Reference ID"].values:
         data.loc[data["Reference ID"] == reference_id, ["Finance Status", "Issue Date"]] = [finance_status, issue_date]
+        write_data(data)
+        return True
+    return False
+
+def update_liquidation_details(reference_id, liquidated, returned, invoices):
+    """
+    Update the liquidation details for a specific request.
+    """
+    data = read_data()
+    if reference_id in data["Reference ID"].values:
+        data.loc[data["Reference ID"] == reference_id, ["Liquidated", "Returned", "Liquidated Invoices"]] = [
+            liquidated, returned, invoices
+        ]
+        write_data(data)
+        return True
+    return False
+
+def edit_request(reference_id, updated_request):
+    """
+    Edit the details of a specific request in the database.
+    """
+    data = read_data()
+    if reference_id in data["Reference ID"].values:
+        for key, value in updated_request.items():
+            if key in data.columns:
+                data.loc[data["Reference ID"] == reference_id, key] = value
         write_data(data)
         return True
     return False
