@@ -64,9 +64,12 @@ def issue_funds_page():
                 issue_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 if update_finance_status(row["Reference ID"], "Issued", issue_date):
                     st.success(f"Funds for Request ID {row['Reference ID']} were successfully issued on {issue_date}.")
-                else:
-                    st.error("Failed to issue funds. Please try again.")
+                    # Trigger a manual refresh by setting session state
+                    st.session_state["refresh_page"] = True
 
-                # Mimic a refresh by updating a session state value
-                st.session_state["refresh_key"] = st.session_state.get("refresh_key", 0) + 1
-                st.experimental_rerun()  # This line triggers a rerun on supported versions
+    # Handle manual refresh if needed
+    if st.session_state.get("refresh_page", False):
+        # Clear the flag to avoid infinite reloads
+        st.session_state["refresh_page"] = False
+        # Redirect to the same page
+        st.experimental_set_query_params()
