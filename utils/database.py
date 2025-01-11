@@ -61,5 +61,5 @@ def get_next_reference_id(data):
     if data.empty:
         return "REQ-001"
     else:
-        max_id = data["Reference ID"].str.extract(r'(\d+)$').astype(int).max()[0]
+        max_id = int(data["Reference ID"].str.split("-").str[1].max())
         return f"REQ-{max_id + 1:03}"
