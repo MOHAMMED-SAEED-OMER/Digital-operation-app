@@ -3,7 +3,7 @@ from datetime import datetime
 from utils.database import read_data, update_finance_status
 
 def issue_funds_page():
-    # Page header with styling
+    # Page header
     st.markdown("""
         <style>
         .page-header {
@@ -33,26 +33,27 @@ def issue_funds_page():
     # Load data
     data = read_data()
 
-    # Debugging: Display the database to confirm what data is being loaded
-    st.write("**Database Debug View:**", data)
+    # Debug: Display all data to verify its structure (optional)
+    # st.write("Full Database", data)
 
-    # Filter approved requests that have not been issued
+    # Ensure required columns are present
     if "Status" not in data.columns or "Finance Status" not in data.columns:
-        st.error("The required columns ('Status' and 'Finance Status') are missing from the database.")
+        st.error("The database is missing required columns ('Status' or 'Finance Status').")
         return
 
-    pending_issue_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isna())]
-
-    # Debugging: Display the filtered data
-    st.write("**Filtered Pending Requests:**", pending_issue_requests)
+    # Filter approved requests that have not been issued
+    pending_issue_requests = data[
+        (data["Status"] == "Approved") &
+        (data["Finance Status"].isna() | (data["Finance Status"] == "Pending"))
+    ]
 
     if pending_issue_requests.empty:
-        # Display a friendly message when no requests are pending
+        # Show a friendly message if no requests are pending issuance
         st.markdown("<div class='no-requests'>🎉 All approved requests have been issued!</div>", unsafe_allow_html=True)
     else:
-        # Display each pending request in a detailed format
+        # Iterate through each pending request and display details
         for i, row in pending_issue_requests.iterrows():
-            st.markdown("<hr>", unsafe_allow_html=True)  # Add a separator between requests
+            st.markdown("<hr>", unsafe_allow_html=True)  # Separator
             st.markdown(f"""
                 <h4 style='color: #117A65;'>Request Details</h4>
                 <ul style='list-style-type: none; padding: 0;'>
@@ -63,14 +64,11 @@ def issue_funds_page():
                 </ul>
             """, unsafe_allow_html=True)
 
-            # Add an "Issue Money" button
-            if st.button(f"Issue Money for Request {row['Reference ID']}", key=f"issue_{row['Reference ID']}"):
+            # "Issue Money" button for each request
+            if st.button(f"Issue Money for {row['Reference ID']}", key=f"issue_{row['Reference ID']}"):
                 issue_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 if update_finance_status(row["Reference ID"], "Issued", issue_date):
                     st.success(f"Funds for Request ID {row['Reference ID']} were successfully issued on {issue_date}.")
                 else:
                     st.error("Failed to issue funds. Please try again.")
-
-                # Trigger a page refresh
-                st.session_state["reload_key"] = st.session_state.get("reload_key", 0) + 1
-                st.experimental_rerun()
+                st.experimental_rerun()  # Reload the page to reflect changes
