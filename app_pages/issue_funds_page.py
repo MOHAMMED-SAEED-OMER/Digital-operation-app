@@ -21,7 +21,7 @@ def issue_funds_page():
         return
 
     # Filter approved requests with no finance status (i.e., pending issuance)
-   approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isnull())]
+    approved_requests = data[(data["Status"] == "Approved") & (data["Finance Status"].isnull())]
 
     # Debugging: Display the filtered data
     if st.checkbox("Show filtered approved requests for debugging"):
@@ -55,5 +55,6 @@ def issue_funds_page():
                     st.error(f"Failed to issue money for Request ID {row['Reference ID']}. Please try again.")
 
                 # Mimic a page refresh to update the display
+                st.session_state["reload_key"] = st.session_state.get("reload_key", 0) + 1
                 st.experimental_set_query_params(reload=str(datetime.now()))
                 st.stop()  # Stop script to reload
