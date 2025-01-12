@@ -45,26 +45,19 @@ def main():
             with tab:
                 page = allowed_pages[i]
                 if page == "Welcome":
-                    st.markdown("<h1>Welcome</h1>", unsafe_allow_html=True)
-                    welcome_page()
+                    welcome_page()  # Use the title defined in `welcome_page.py`
                 elif page == "Request Form":
-                    st.markdown("<h1>Submit a New Request</h1>", unsafe_allow_html=True)
-                    request_form_page()
+                    request_form_page()  # Use the title defined in `request_form.py`
                 elif page == "Database":
-                    st.markdown("<h1>Database</h1>", unsafe_allow_html=True)
-                    database_page()
+                    database_page()  # Use the title defined in `database_page.py`
                 elif page == "Manager's View":
-                    st.markdown("<h1>Manager's View</h1>", unsafe_allow_html=True)
-                    managers_view_page()
+                    managers_view_page()  # Use the title defined in `managers_view.py`
                 elif page == "Issue Funds":
-                    st.markdown("<h1>Issue Funds</h1>", unsafe_allow_html=True)
-                    issue_funds_page()
+                    issue_funds_page()  # Use the title defined in `issue_funds_page.py`
                 elif page == "Liquidation":
-                    st.markdown("<h1>Liquidation</h1>", unsafe_allow_html=True)
-                    liquidation_page()
+                    liquidation_page()  # Use the title defined in `liquidation_page.py`
                 elif page == "Edit Page":
-                    st.markdown("<h1>Edit Database</h1>", unsafe_allow_html=True)
-                    edit_page()
+                    edit_page()  # Use the title defined in `edit_page.py`
 
 if __name__ == "__main__":
     main()
