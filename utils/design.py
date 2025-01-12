@@ -84,7 +84,7 @@ def enhanced_navigation_bar():
     st.sidebar.markdown("<h3 style='text-align: center;'>Contact Us</h3>", unsafe_allow_html=True)
     st.sidebar.markdown("""
         <div class="center-text">
-            📧 Email: <a href="mailto:support@yourapp.com">support@hasar.org</a><br>
+            📧 Email: <a href="mailto:support@yourapp.com">mohammed.saeed@hasariraq.onmicrosoft.com</a><br>
             📞 Phone: +9647507810474
         </div>
     """, unsafe_allow_html=True)
