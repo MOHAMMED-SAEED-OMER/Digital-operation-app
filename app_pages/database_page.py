@@ -15,7 +15,6 @@ def database_page():
         </style>
     """, unsafe_allow_html=True)
 
-    st.title("📂 Database")
     st.markdown("""
         <div style="text-align: center; margin-bottom: 20px;">
             <h2 style="color: #2E8B57; font-family: Arial, sans-serif;">View All Requests</h2>
