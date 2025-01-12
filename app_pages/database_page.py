@@ -2,6 +2,7 @@ import streamlit as st
 from utils.database import read_data
 
 def database_page():
+    # Add custom styling for the dataframe container
     st.markdown("""
         <style>
             .dataframe-container {
@@ -15,6 +16,7 @@ def database_page():
         </style>
     """, unsafe_allow_html=True)
 
+    # Styled header
     st.markdown("""
         <div style="text-align: center; margin-bottom: 20px;">
             <h2 style="color: #2E8B57; font-family: Arial, sans-serif;">View All Requests</h2>
@@ -27,7 +29,7 @@ def database_page():
 
     if not data.empty:
         # Add search functionality
-        search_query = st.text_input("🔍 Search by Requester Name or Reference ID:", "")
+        search_query = st.text_input("Search by Requester Name or Reference ID:", "")
         if search_query:
             filtered_data = data[
                 data["Requester Name"].str.contains(search_query, case=False, na=False) |
@@ -37,7 +39,7 @@ def database_page():
             filtered_data = data
 
         # Add filters for status and finance status
-        with st.expander("🔧 Advanced Filters"):
+        with st.expander("Advanced Filters"):
             col1, col2 = st.columns(2)
             with col1:
                 status_filter = st.selectbox(
@@ -59,7 +61,7 @@ def database_page():
                 filtered_data = filtered_data[filtered_data["Finance Status"] == finance_status_filter]
 
         # Show total results count
-        st.markdown(f"### 📊 {len(filtered_data)} Results Found")
+        st.markdown(f"<h3 style='color: #2E8B57;'>📊 {len(filtered_data)} Results Found</h3>", unsafe_allow_html=True)
 
         # Display the data in a scrollable container
         st.markdown('<div class="dataframe-container">', unsafe_allow_html=True)
@@ -69,7 +71,7 @@ def database_page():
         # Allow export to CSV
         csv_data = filtered_data.to_csv(index=False).encode("utf-8")
         st.download_button(
-            label="📥 Export Filtered Data to CSV",
+            label="Export Filtered Data to CSV",
             data=csv_data,
             file_name="filtered_requests.csv",
             mime="text/csv"
